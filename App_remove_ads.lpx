@@ -1,0 +1,470 @@
+#!name=各软件去广告合集
+#!desc=Reddit、虎扑、航旅纵横、知乎、得物、闲鱼、爱奇艺、小红书、酷安、微信公众号、微博、网易邮箱大师、拼多多、夸克、京东、高德地图、滴滴、百度网盘、12306、Keep、QQ音乐、Soul、大麦、淘宝 的去广告插件。
+#!tag=去广告
+#!system=iOS, iPadOS, tvOS, macOS
+#!system_version=15
+#!loon_version=3.5.1(998)
+#!homepage=https://hub.kelee.one
+#!date=2026-11-03 00:00:00
+
+[Rule]
+# 航旅纵横
+URL-REGEX, "^http?:\/\/(discardrp|startup)\.umetrip\.com\/gateway\/api\/umetrip\/native", REJECT
+
+# 爱奇艺
+IP-CIDR, 103.44.59.54/32, REJECT, no-resolve
+IP-CIDR, 111.63.147.158/32, REJECT, no-resolve
+IP-CIDR, 116.211.198.237/32, REJECT, no-resolve
+DOMAIN-SUFFIX, cupid.iqiyi.com, DIRECT
+DOMAIN, api.iqiyi.com, REJECT
+DOMAIN, access.if.iqiyi.com, REJECT
+
+# 小红书
+AND, ((PROTOCOL, QUIC), (DOMAIN-SUFFIX, xiaohongshu.com)), REJECT
+
+# 微信公众号
+DOMAIN-SUFFIX, wxs.qq.com, REJECT
+
+# 微博
+DOMAIN-SUFFIX, uve.weibo.com, DIRECT
+DOMAIN, huodong.weibo.cn, REJECT
+DOMAIN-SUFFIX, biz.weibo.com, REJECT
+
+# 拼多多
+AND, ((URL-REGEX, "^http:\/\/((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/d(\d)?"), (USER-AGENT, "*com.xunmeng.pinduoduo*")), REJECT
+AND, ((URL-REGEX, "^http:\/\/\[[0-9a-fA-F:]+\]\/d(\d)?\?"), (USER-AGENT, "*com.xunmeng.pinduoduo*")), REJECT
+AND, ((DOMAIN, api.pinduoduo.com), (PROTOCOL, QUIC)), REJECT
+DOMAIN, titan.pinduoduo.com, REJECT
+DOMAIN, xg.pinduoduo.com, REJECT
+DOMAIN, cdl-1.pddpic.com, REJECT
+DOMAIN, cdl-p2.pddpic.com, REJECT
+DOMAIN, cd-1.pddpic.com, REJECT
+DOMAIN, apm.pinduoduo.com, REJECT
+DOMAIN, th-b.pinduoduo.com, REJECT
+DOMAIN, ta.pinduoduo.com, REJECT
+DOMAIN, th.pinduoduo.com, REJECT
+DOMAIN, th-a.pinduoduo.com, REJECT
+DOMAIN, ta-a.pinduoduo.com, REJECT
+DOMAIN, meta.pinduoduo.com, REJECT
+DOMAIN, apm-a.pinduoduo.com, REJECT
+
+# 京东
+URL-REGEX, "^http:\/\/\w{32}\.jddebug\.com\/diagnose\?", REJECT
+
+# 滴滴
+DOMAIN, gwp.xiaojukeji.com, REJECT
+DOMAIN, gwpgz.diditaxi.com.cn, REJECT
+DOMAIN, adtrack.xiaojukeji.com, REJECT
+
+# 12306
+DOMAIN, ad.12306.cn, DIRECT
+
+# Keep
+DOMAIN, kad.gotokeep.com, REJECT
+
+# QQ音乐
+DOMAIN, adstats.tencentmusic.com, REJECT
+DOMAIN, ad.tencentmusic.com, REJECT
+DOMAIN, adcdn.tencentmusic.com, REJECT
+DOMAIN, adcdn6.tencentmusic.com, REJECT
+DOMAIN, adexpo.tencentmusic.com, REJECT
+DOMAIN, adclick.tencentmusic.com, REJECT
+DOMAIN, mc.tencentmusic.com, REJECT
+DOMAIN, monitor.music.qq.com, REJECT
+DOMAIN, tmead.y.qq.com, REJECT
+DOMAIN, tmeadbak.y.qq.com, REJECT
+DOMAIN, tmeadquic.y.qq.com, REJECT
+
+# Soul
+DOMAIN-SUFFIX, soulapp.cn, DIRECT
+IP-CIDR, 8.210.3.170/32, DIRECT, no-resolve
+IP-CIDR, 47.75.72.47/32, DIRECT, no-resolve
+DOMAIN, ad-h5-cdn.soulapp.cn, REJECT
+DOMAIN, ad-h5-station-cdn.soulapp.cn, REJECT
+DOMAIN, ad-r.soulapp.cn, REJECT
+DOMAIN, soul-ad.soulapp.cn, REJECT
+IP-CIDR, 47.56.131.76/32, REJECT, no-resolve
+IP-CIDR, 47.97.215.55/32, REJECT, no-resolve
+IP-CIDR, 47.99.42.29/32, REJECT, no-resolve
+IP-CIDR, 47.110.187.87/32, REJECT, no-resolve
+IP-CIDR, 47.243.147.125/32, REJECT, no-resolve
+IP-CIDR, 120.27.235.201/32, REJECT, no-resolve
+IP-CIDR, 121.196.197.147/32, REJECT, no-resolve
+
+# 淘宝
+DOMAIN, adashx.m.taobao.com, REJECT
+DOMAIN, ossgw.alicdn.com, REJECT
+DOMAIN, ems.youku.com, REJECT
+DOMAIN, hudong.alicdn.com, REJECT
+DOMAIN, h-adashx.ut.taobao.com, REJECT
+DOMAIN, ut.taobao.com, REJECT
+
+[Rewrite]
+# Reddit
+response if ${url} ~= /^https?:\/\/gql(-fed)?\.reddit\.com/i then response.json.jq_file("https://kelee.one/Resource/JQLang/Reddit/Reddit_remove_ads.jq")
+
+# 虎扑
+request if ${url} ~= /^https:\/\/games\.mobileapi\.hupu\.com\/\d\/\d\.\d\.\d+\/bplapi\/reddot\/v1\/app\/getReddot/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/bbs\.mobileapi\.hupu\.com\/\d\/\d\.\d\.\d+\/(bbsallapi\/tag\/v1\/heatTag|bbsrankapi\/v1\/rating\/list)/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/games\.mobileapi\.hupu\.com\/\d\/\d\.\d\.\d+\/search\/v2\/(hintkeylist|hotkeylist)/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/goblin\.hupu\.com\/\d\/\d\.\d\.\d+\/interfaceAd\/getOther\/v\d/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/goblin\.hupu\.com\/\d\/\d\.\d\.\d+\/interfaceAd\/getOther\/batch/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/fairy\.mobileapi\.hupu\.com\/gallery\/getmod2/i then reject(200)
+request if ${url} ~= /^https:\/\/games\.mobileapi\.hupu\.com\/3\/8\.0\.86\/bplcommentapi\/bpl\/score_tab\/groups/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/games\.mobileapi\.hupu\.com\/3\/8\.0\.86\/bplapi\/banner\/getLocationBanners/i then reject_dict(200)
+
+# 知乎
+response if ${url} ~= /^https:\/\/m-cloud\.zhihu\.com\/api\/cloud\/zhihu\/config\/all\?/i then response.json.jq("def drop_keys: {\"km_httpdns_new_config_tars\":true,\"preFetchHttpDns\":true,\"httpdns_detector_use_concurrent\":true,\"httpdns_use_memory_cache\":true,\"httpdns_new_config_tars\":true,\"coreNetworkConf_useTars\":true,\"km_coreNetworkConf_useTars\":true,\"sugarQuicConfig\":true,\"quic_dns_detect_enable\":true,\"quicMixAB\":true,\"quic_downgrade_enable\":true,\"quic_priority_strategy\":true,\"quic_check_health_enable\":true,\"tquic_configuration\":true,\"networkExprimentList\":true,\"tars_ab_list\":true,\"zaSetExtraRequestHeader\":true}; .data.configs |= map(select((drop_keys[.configKey] // false) | not) | if (.configValue | type) == \"object\" then del(.configValue.delayHttpdns, .configValue.dnsParser, .configValue.HTTPDNS) else . end)")
+request if ${url} ~= /^https:\/\/api\.zhihu\.com\/ad-style-service\/request$/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/api\.zhihu\.com\/commercial_api\//i then reject_dict(200)
+response if ${url} ~= /^https:\/\/api\.zhihu\.com\/root\/tab\/v\d(?:\?.+)?$/i then response.json.jq(".tab_list |= map(select(.tab_type == \"follow\" or .tab_type == \"recommend\" or .tab_type == \"hot\" or .tab_type == \"ring_tab\"))")
+response if ${url} ~= /^https:\/\/api\.zhihu\.com\/topstory\/recommend\?/i then response.json.jq(".data |= map(select(.type == \"ComponentCard\"))")
+request if ${url} ~= /^https:\/\/api\.zhihu\.com\/commercial_api\/banners_v\d\/app_float_corner\?/i then reject_dict(200)
+response if ${url} ~= /^https:\/\/api\.zhihu\.com\/questions\/\d+\/feeds\?/i then response.json.delete("ad_info")
+request if ${url} ~= /^https:\/\/api\.zhihu\.com\/next-render\?id=\d+&type=answer/i then reject_dict(200)
+response if ${url} ~= /^https:\/\/api\.zhihu\.com\/comment_v\d\/(answers|pins)\/\d+\/root_comment\?/i then response.json.delete("atmosphere_voting_config")
+response if ${url} ~= /^https:\/\/(api|page-info)(?:\.zhihu)?\.com\/answers\/v\d\/\d+(?:\?.*)?$/i then response.json.delete(["third_business", "float_search_word"])
+response if ${url} ~= /^https:\/\/(api|page-info)(?:\.zhihu)?\.com\/answers\/v\d\/\d+(?:\?.*)?$/i then response.json.jq(".structured_content.segments |= map(select(.type != \"card\"))")
+response if ${url} ~= /^https:\/\/api\.zhihu\.com\/topstory\/recommend\?/i then response.json.jq(".data[]?.children |= (if type == \"array\" then map(select(.id != \"ring\")) else . end)")
+response if ${url} ~= /^https:\/\/api\.zhihu\.com\/(articles|answers|pins)\/v\d\/\d+\?/i then response.json.delete(["third_business", "ring_info", "interaction_bar_plugins"])
+response if ${url} ~= /^https:\/\/api\.zhihu\.com\/comment_v\d\/answers\/\d+\/list-headers$/i then response.json.delete("continuous_consumption_module")
+request if ${url} ~= /^https:\/\/api\.zhihu\.com\/commercial_api\/answer\/\d+\/bottom-v\d$/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/api\.zhihu\.com\/related_recommend\/feed\/waterfall\?/i then reject_dict(200)
+response if ${url} ~= /^https:\/\/api\.zhihu\.com\/podcasts\/hub\/v\d$/i then response.json.delete("banners")
+request if ${url} ~= /^https:\/\/api\.zhihu\.com\/search\/preset_words\?/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/api\.zhihu\.com\/search\/related_queries\/question\/\d+$/i then reject_dict(200)
+response if ${url} ~= /^https:\/\/api\.zhihu\.com\/search\/recommend_query\/v\d\?/i then response.json.jq(".recommend_queries.queries |= map(select(.type == \"normal\"))")
+response if ${url} ~= /^https:\/\/api\.zhihu\.com\/search_v\d\?/i then response.json.delete("pendant")
+response if ${url} ~= /^https:\/\/api\.zhihu\.com\/search\/tabs\?/i then response.json.jq(".data |= map(select(.t | IN(\"general\", \"ai_zhida\", \"recent\", \"people\", \"zvideo\", \"ring\", \"topic\", \"podcast\", \"column\", \"pin\", \"favlist\")))")
+request if ${url} ~= /^https:\/\/zhida\.zhihu\.com\/ai_ingress\/knowledge\/square\/categories\/feeds\?categoryId=1%7D$/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/zhida\.zhihu\.com\/ai_ingress\/ai_chat\/guidance$/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/api\.zhihu\.com\/content-distribution-core\/bubble\/common\/show$/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/www\.zhihu\.com\/api\/v\d\/members\/homepage_card$/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/api\.zhihu\.com\/people\/homepage_entry_v\d$/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/api\.zhihu\.com\/kvip\/right\/my_card\?/i then reject_dict(200)
+response if ${url} ~= /^https:\/\/api\.zhihu\.com\/people\/self$/i then response.json.delete(["vip_info.entrance_new.right_button", "vip_info.entrance_v2"])
+request if ${url} ~= /^https:\/\/api\.zhihu\.com\/unlimited\/go\/my_card\/v\d\?/i then reject_dict(200)
+
+# 得物
+request if ${url} ~= /^https:\/\/app\.dewu\.com\/api\/v1\/app\/advertisement\//i then reject_dict(200)
+request if ${url} ~= /^https:\/\/app\.dewu\.com\/hacking-newbie\/v1\/app\/coupon\/module\?/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/app\.dewu\.com\/api\/v1\/app\/search\/lexicon\/v3\/background_words\?/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/app\.dewu\.com\/api\/v1\/app\/search\/lexicon\/v1\/rank_words\?/i then reject_dict(200)
+response if ${url} ~= /^https:\/\/app\.dewu\.com\/api\/v1\/app\/biz-aggregate\/me\/user-index\?/i then response.json.jq(".data.modules |= map(if .key == \"wallet\" then .data.menus |= map(select(.key == \"coupon\" or .key == \"allowance\" or .key == \"gift\" or .key == \"balance\")) else . end) | .data.modules |= map(select(.key != \"merchant\" and .key != \"discountCoupon\"))")
+response if ${url} ~= /^https:\/\/app\.dewu\.com\/api\/v1\/app\/account\/wallet\/page\/entrance\?/i then response.json.jq(".data.groupInfoDTOS |= map(.moduleInfoDTO = {assetModule: .moduleInfoDTO.assetModule}) | .data.moduleNames = [.data.moduleNames[] | select(. == \"assetModule\")] | . as $full | $full | .data.groupNames |= (map(select(. == \"MAIN\" or . == \"ASYNC_COMMON\" or . == \"ASYNC_GOODS_FEEDS\")))")
+response if ${url} ~= /^https:\/\/app\.dewu\.com\/identify-discovery\/v1\/discovery\/index\?/i then response.json.jq(".data.groups |= map(.items |= map(select(.title == \"消息中心\")))")
+request if ${url} ~= /^https:\/\/app\.dewu\.com\/sns-rec\/v1\/attention\/feed\?/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/app\.dewu\.com\/sns-rec\/v1\/search\/word-skip\/new-list\?/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/app\.dewu\.com\/sns-rec\/v1\/search\/hotword-list\?/i then reject_dict(200)
+
+# 闲鱼
+request if ${url} ~= /^https:\/\/acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idlecommerce\.splash\.ads\//i then reject_dict(200)
+response if ${url} ~= /^https:\/\/acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idlehome\.home\.nextfresh\//i then response.json.jq(".data.homeTopList |= map(select(.sectionType == \"kingkongDo\")) | .data.sections |= map(select(.data.clickParam.args.cardType as $ct | $ct != \"homeMultiBanner\" and $ct != \"mamaAD\")) | .data.sections |= map(select((.template.name|type==\"string\")and(.template.name==\"idlefish_home_new_commodity_card\"or(.template.name|contains(\"fish_home_tags_item_card\")))))")
+response if ${url} ~= /^https:\/\/acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idlehome\.widget\.refresh\.get\//i then response.json.jq(".data.homeTopList |= map(select(.sectionType == \"kingkongDo\"))")
+response if ${url} ~= /^https:\/\/acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idle\.home\.whale\.modulet\//i then response.json.jq(".data.container.sections |= map(select(.template.name == \"fish_home_miniapp\"))")
+request if ${url} ~= /^https:\/\/acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idle\.user\.strategy\.list\//i then reject_dict(200)
+response if ${url} ~= /^https:\/\/acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idle\.fun\.follow\.feed\.list\//i then response.json.jq(".data.sections|=map(select(.cardType==2001))")
+response if ${url} ~= /^https:\/\/acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idlehome\.home\.community\//i then response.json.jq(".data.feedsList |= map(select(.template.name == \"idlefish_home_new_commodity_card\" or .template.name == \"idlefish_home_new_content_card\"))")
+request if ${url} ~= /^https:\/\/acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idle\.item\.recommend\.list\//i then reject_dict(200)
+response if ${url} ~= /^https:\/\/acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idlehome\.home\.newitem\.page\//i then response.json.jq(".data.sections |= map(select(.data.clickParam.args.cardType as $ct | $ct != \"banner\" and $ct != \"mamaAD\"))")
+request if ${url} ~= /^https:\/\/acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idle\.local\.near\.by\.corner\.info\//i then reject_dict(200)
+response if ${url} ~= /^https:\/\/acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idle\.local\.flow\.plat\.section\//i then response.json.jq(".data.data.components |= map(select(.data and (.data|type==\"object\") and .data.template and (.data.template|type==\"object\") and .data.template.name and (.data.template.name|type==\"string\") and (.data.template.name|contains(\"fish_city_kingkong\"))))")
+response if ${url} ~= /^https:\/\/acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idle\.local\.home\.top\//i then response.json.jq(".data.data.components |= map(select(.key == \"fish_home_second_stage_top_cardV3\"))")
+response if ${url} ~= /^https:\/\/acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idle\.local\.home\//i then response.json.jq(".data.sections |= map(select((.template.cardEnum != \"ads\") and (.cardType == \"common\")))")
+response if ${url} ~= /^https:\/\/acs\.m\.goofish\.com\/gw\/mtop\.idle\.user\.page\.my\.adapter\//i then response.json.jq(".data.container.sections |= map(select((.template.name? // \"\") | test(\"^my_fy[0-9]+_(header|user_info|trade|appraise|tools)$\"))) | .data.container.sections |= map(.item |= (if .level and .level.exContent and (.level.exContent | has(\"tips\")) then del(.level) else . end)) | .data.container.sections |= map(if .sectionBizCode==\"entry2025\" then .item.tool.exContent.tools |= [[.[][] | select(.exContent.id as $id | $id==5 or $id==39 or $id==6 or $id==30 or $id==29 or $id==2 or $id==32 or $id==3 or $id==1)] | sort_by(. as $item | ([5,39,6,30,29,2,32,3,1] | index($item.exContent.id))) | [range(0;length;5) as $i | .[$i:$i+5]]][] else . end) | del(.data.ability)")
+request if ${url} ~= /^https:\/\/acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idle\.item\.buy\.feeds\//i then reject_dict(200)
+request if ${url} ~= /^https:\/\/acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idlemtopsearch\.search\.shade\//i then reject_dict(200)
+response if ${url} ~= /^https:\/\/acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idlehome\.home\.circle\.list\//i then response.json.jq(".data.circleList[]?.showInfo |= del(.titleImage, .atmosphereImageUrl) | .data.next.headList |= map(select(.bizCode == \"main\" or .bizCode == \"market\" or .bizCode == \"IDLE_CIRCLE\")) | del(.data.next.headList[]?.showInfo.rightTagImage)")
+response if ${url} ~= /^https:\/\/acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idlehome\.magic\.home\.page\.list\//i then response.json.delete("data.topList")
+response if ${url} ~= /^https:\/\/g-acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idlemtopsearch\.search\//i then response.json.jq(".data.resultList |= map(if .data.item.main.exContent.dislikeFeedback.clickParam.args.bizType == \"ad\" then empty else . end)")
+response if ${url} ~= /^https:\/\/g-acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idlemtopsearch\.search\//i then response.json.delete("data.resultPrefixBar")
+response if ${url} ~= /^https:\/\/acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idlemtopsearch\.search\.discover\//i then response.json.jq(".data.resultList |= map(select(.type != \"MarketHotSpot\"))")
+response if ${url} ~= /^https:\/\/acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idlemtopsearch\.item\.search\.activate\//i then response.json.jq(".data.cardList |= map(if has(\"cardData\") and (.cardData | has(\"hotwords\")) then .cardData |= del(.hotwords) else . end)")
+request if ${url} ~= /^https:\/\/acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idle\.playboy\.recommend\//i then reject_dict(200)
+response if ${url} ~= /^https:\/\/acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idle\.trade\.full\.info\//i then response.json.jq(".data.components |= map(select(.render | . == \"orderStatusVO\" or . == \"addressInfoVO\" or . == \"orderInfoVO\"))")
+
+# 爱奇艺
+response if ${url} ~= /^https:\/\/cards\.iqiyi\.com\/views_home\/3\.0\/qy_home\?/i then response.json.delete("base.statistics")
+response if ${url} ~= /^https:\/\/cards\.iqiyi\.com\/views_home\/3\.0\/qy_home\?/i then response.json.jq("del(.cards[] | select(.alias_name == \"focus\" or .alias_name == \"ad_mobile_flow\" or .alias_name == \"ad_trueview\"))")
+response if ${url} ~= /^https:\/\/cards\.iqiyi\.com\/views_category\/3\.0\/category_home\?/i then response.json.jq("del(.base.statistics | select(.ad_str)) | del(.cards[] | select(.alias_name == \"entrence_focus\" or .alias_name == \"ad_trueview\"))")
+response if ${url} ~= /^https:\/\/cards\.iqiyi\.com\/waterfall(-plt)?\/3\.0\/feed\?/i then response.json.jq("del(.base.statistics | select(.ad_str)) | del(.. | select(.block_class?))")
+response if ${url} ~= /^https:\/\/cards\.iqiyi\.com\/views_plt\/3\.0\/player_tabs_v2\?/i then response.json.delete("kv_pair.activity_tab")
+response if ${url} ~= /^https:\/\/cards\.iqiyi\.com\/views_plt\/3\.0\/player_tabs_v2\?/i then response.json.jq("del(.cards[] | select(.alias_name == \"play_vip_promotion\" or .alias_name == \"play_detail_tag\" or .alias_name == \"play_chat_entrance\" or .alias_name == \"play_ad_no_vip\" or .alias_name == \"play_vertical_short_video\" or .alias_name == \"play_rap_custom\" or .alias_name == \"play_topical_tab\" or .alias_name == \"play_vertical\" or .alias_name == \"play_water_fall_like\")) | del(.. | select(.block_class?))")
+response if ${url} ~= /^https:\/\/comment-card\.iqiyi\.com\/views_comment\/3\.0\/long_video_comments\?/i then response.json.jq("")
+response if ${url} ~= /^https:\/\/cards\.iqiyi\.com\/views_search\/3\.0\/hot_query_search\?/i then response.json.jq(".cards |= map(select(.alias_name as $name | $name != \"ad_trueview\" and $name != \"ad_mobile_flow\" and $name != \"search_mid_text_ad\")) | if .base.statistics.ad_str? then del(.base.statistics) else . end")
+request if ${url} ~= /^https?:\/\/iface2\.iqiyi\.com\/control\/3\.0\/init_proxy\?/i then reject_dict(200)
+request if ${url} ~= /^https?:\/\/act\.vip\.iqiyi\.com\/interact\/api\/v2\/show\?/i then reject_dict(200)
+request if ${url} ~= /^https?:\/\/iface2\.iqiyi\.com\/ivos\/interact\/video\/data\?/i then reject_dict(200)
+request if ${url} ~= /^https?:\/\/iface2\.iqiyi\.com\/video\/3\.0\/v_interface_proxy\?/i then reject_dict(200)
+request if ${url} ~= /^https?:\/\/iface2\.iqiyi\.com\/views_pop\/3\.0\/pop_control\?/i then reject_dict(200)
+response if ${url} ~= /^https?:\/\/comment-card\.iqiyi\.com\/views_comment\/3\.0\/long_video_comments\?/i then response.json.jq(".cards |= map(select(has(\"alias_name\")))")
+response if ${url} ~= /^https?:\/\/iface2\.iqiyi\.com\/views_menus\/3\.0\/bottom_theme\?/i then response.json.delete("theme_list")
+response if ${url} ~= /^https?:\/\/iface2\.iqiyi\.com\/views_menus\/3\.0\/bottom_theme\?/i then response.json.jq(".cards |= map(.items |= map(select(.other.bottom_tab_type == \"rec\" or .other.bottom_tab_type == \"my\")))")
+response if ${url} ~= /^https?:\/\/iface2\.iqiyi\.com\/views_menus\/3\.0\/home_top_menu\?/i then response.json.jq(".nav_group_data[].nav_list |= map(select(. == \"0\" or . == \"2\" or . == \"1007\" or . == \"1\" or . == \"6\" or . == \"3\"))")
+response if ${url} ~= /^https?:\/\/iface2\.iqiyi\.com\/fusion\/3\.0\/common_switch\?/i then response.json.delete("content.resource.cast_device_ad")
+response if ${url} ~= /^https?:\/\/iface2\.iqiyi\.com\/fusion\/3\.0\/common_switch\?/i then response.json.replace(["content.switchs.app_ad.app_ad_enable", "content.switchs.app_ad.app_ad_duration", "content.switchs.ios_tech.kPreadAdHintSwitch", "content.switchs.ios_tech.ad_download", "content.switchs.m_qiyi_ios_tech.KFocusAdVideoPlayTimesIn4G"], [0, 0, 0, 0, 0])
+response if ${url} ~= /^https?:\/\/(kjp|t7z)\.cupid\.iqiyi\.com\/mixer\?/i then response.json.delete("adSlots")
+response if ${url} ~= /^https?:\/\/search\.video\.iqiyi\.com\/q\?/i then response.json.delete("data")
+response if ${url} ~= /^https?:\/\/iface2\.iqiyi\.com\/aggregate\/3\.0\/getMyMenus\?/i then response.json.jq(".data |= map(select(.statistic.block != \"wd_liebiao_2\") | select(all(.menuList[]?.statistic2.block; . != \"wd_liebiao_3\")))")
+
+# 小红书
+request if ${url} ~= /^https:\/\/ci\.xiaohongshu\.com\/system_config\/watermark/i then reject_img(200)
+request if ${url} ~= /^https:\/\/edith\.xiaohongshu\.com\/api\/sns\/v1\/surprisebox\/(?:get_style|open|submit_action)/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/www\.xiaohongshu\.com\/api\/marketing\/box\/trigger\?/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/edith\.xiaohongshu\.com\/api\/sns\/(?:v2\/guide\/user_banner|v3\/note\/guide)/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/www\.xiaohongshu\.com\/api\/sns\/(?:v1\/ads\/resource|v2\/hey\/\w+\/hey_gallery)/i then reject_dict(200)
+response if ${url} ~= /^https:\/\/edith\.xiaohongshu\.com\/api\/sns\/v1\/search\/banner_list$/i then response.json.replace("data", "{}")
+response if ${url} ~= /^https:\/\/edith\.xiaohongshu\.com\/api\/sns\/v1\/search\/hot_list$/i then response.json.replace("data.items", "[]")
+response if ${url} ~= /^https:\/\/edith\.xiaohongshu\.com\/api\/sns\/v4\/search\/hint/i then response.json.replace("data.hint_words", "[]")
+response if ${url} ~= /^https:\/\/edith\.xiaohongshu\.com\/api\/sns\/v4\/search\/trending\?/i then response.json.replace(["data.queries", "data.hint_word"], ["[]", "{}"])
+
+# 酷安
+request if ${url} ~= /^https:\/\/api\.coolapk\.com\/v6\/search\?.*type=hotSearch/i then reject_dict(200)
+response if ${url} ~= /^https:\/\/api\.coolapk\.com\/v6\/feed\/detail\?/i then response.json.jq(".data.hotReplyRows |= if . then map(select(.id?)) else . end | .data.topReplyRows |= if . then map(select(.id?)) else . end | reduce (\"detailSponsorCard\", \"include_goods\", \"include_goods_ids\") as $key (.; .data[$key]=[])")
+response if ${url} ~= /^https:\/\/api\.coolapk\.com\/v6\/feed\/replyList/i then response.json.jq("if .data? and ((.data | type) == \"array\") and (.data | length > 0) then .data |= map(select(.id?)) else . end")
+response if ${url} ~= /^https:\/\/api\.coolapk\.com\/v6\/main\/dataList/i then response.json.jq(".data |= (if (type==\"array\" and length>0) then map(select((.entityTemplate!=\"sponsorCard\") and (.title!=\"精选配件\"))) else . end)")
+response if ${url} ~= /^https:\/\/api\.coolapk\.com\/v6\/page\/dataList/i then response.json.jq("if (.data | length > 0) then .data |= map(select((.title? != \"酷安热搜\") and (.entityTemplate? != \"imageScaleCard\") and (.entityTemplate? != \"sponsorCard\"))) else . end")
+response if ${url} ~= /^https:\/\/api\.coolapk\.com\/v6\/main\/indexV8/i then response.json.jq(".data |= (if length > 0 then map(select((.entityTemplate != \"sponsorCard\") and ([8639,29349,33006,32557] | index(.entityId) | not) and ((.title // \"\" | test(\"值得买|红包\")) | not))) else . end)")
+response if ${url} ~= /^https:\/\/api\.coolapk\.com\/v6\/main\/init/i then response.json.jq(".data |= map(select(.entityId? | [944,945,6390] | index(.) | not) | if .entityId == 20131 then .entities |= map(select(.title != \"酷品\")) else . end)")
+
+# 微信公众号
+request if ${url} ~= /^https:\/\/mp\.weixin\.qq\.com\/mp\/(cps_product_info|getappmsgad|jsmonitor|masonryfeed|relatedarticle)\?/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/mp\.weixin\.qq\.com\/mp\/relatedsearchword/i then reject_dict(200)
+
+# 微博
+request if ${url} ~= /^https:\/\/api\.weibo\.cn\/2\/(?:ug\/checkin\/list|push\/daily|push\/info)/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/api\.weibo\.cn\/2\/!\/live\/media_homelist\?/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/api\.weibo\.cn\/2\/comments\/bullet_screens\?/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/api\.weibo\.cn\/2\/photo\/info\?/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/api\.weibo\.cn\/2\/statuses\/(?:container_positive|push_info)/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/api\.weibo\.cn\/2\/vote\/get_vote_detail\?/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/api\.weibo\.cn\/2\/!\/chaohua\/discovery\/home_bottom\/switch\?/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/api\.weibo\.cn\/2\/!\/huati\/(?:discovery_home_bottom_getdotinfo|mobile_discovery_searchchange)/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/api\.weibo\.cn\/2\/!\/wbox\/\w+\/(?:home_bottom_modal|interest_category)/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/api\.weibo\.cn\/2\/search\/(?:container_discover|finder_nav_polling)\?/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/api\.weibo\.cn\/2\/hot\/hours_spotlight\?/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/api\.weibo\.cn\/2\/video\/redpacket\?/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/api\.weibo\.cn\/2\/!\/(?:search\/finder_nav_polling|sug\/list\/finderchange|was\/finder\/searchbarchange)\?/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/api\.weibo\.cn\/2\/video\/tiny_video_info_show\?/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/bootrealtime\.uve\.weibo\.com\/v[23]\/ad\/realtime/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/sdkapp\.uve\.weibo\.com\/interface\/sdk\/(?:get-lbs-cell-info\.php|sdkconfig\.php)/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/card\.weibo\.com\/article\/m\/aj\/(?:reward|uvead)/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/weibo\.com\/ttarticle\/x\/m\/aj\/(?:reward|uvead)/i then reject_dict(200)
+
+# 网易邮箱大师
+request if ${url} ~= /^https:\/\/appconf\.mail\.163\.com\/mailmaster\/api\/http\/urlConfig\.do$/i then reject_dict(200)
+response if ${url} ~= /^https:\/\/appconf\.mail\.163\.com\/mailmaster\/api\/page\/v2\/conf\.do$/i then response.json.delete(["data.functionOperatorInfoList", "data.memberOperator", "data.activityTabInfoList"])
+response if ${url} ~= /^https:\/\/appconf\.mail\.163\.com\/mailmaster\/api\/config\/function\.do$/i then response.json.jq(".data.config[] |= if .result.tools then .result.tools |= map(select(.name == \"邮件追踪\" or .name == \"替身邮箱\")) else . end | del(.data.config[] | select(.functionName == \"Function-AD\"))")
+request if ${url} ~= /^https:\/\/dashi\.163\.com\/task-center-api\/fapi\/task\/list$/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/appconf\.mail\.163\.com\/mailoperating\/mailmaster\/api\/operator\/get$/i then reject_dict(200)
+
+# 拼多多
+request if ${url} ~= /^https:\/\/api\.pinduoduo\.com\/api\/aristotle\/unrated_order_for_unreceived_tab\?/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/api\.pinduoduo\.com\/api\/aristotle\/query_order_list_tabs_element\?/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/api\.pinduoduo\.com\/api\/aquarius\/hungary\/global\/homepage\?/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/api\.pinduoduo\.com\/api\/caterham\/v3\/query\/order_express_group\?/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/api\.pinduoduo\.com\/search_hotquery\?/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/api\.pinduoduo\.com\/api\/zaire_biz\/chat\/resource\/get_list_data\?/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/api\.pinduoduo\.com\/api\/caterham\/v3\/query\/new_chat_group\?/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/api\.pinduoduo\.com\/api\/alexa\/goods\/back_up\?/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/api\.pinduoduo\.com\/api\/caterham\/v3\/query\/personal\?/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/api\.pinduoduo\.com\/api\/brand-olay\/goods_detail\/bybt_guide\?/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/api\.pinduoduo\.com\/api\/engels\/reviews\/require\/append\?/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/api\.pinduoduo\.com\/api\/caterham\/v3\/query\/my_order_group\?/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/api\.pinduoduo\.com\/api\/caterham\/v3\/query\/likes\?/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/api\.pinduoduo\.com\/api\/phantom\/gbdbpdv\/extra\?/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/api\.pinduoduo\.com\/api\/manufacturer\/cross\/shortcut\/list\?/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/api\.pinduoduo\.com\/api\/dunkirk\/liveactivity\/push\/create\/url\/report\?/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/api\.pinduoduo\.com\/api\/growth\/nagato\/app\/index\/gather\?/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/api\.pinduoduo\.com\/api\/engels\/wait\/receive\/review\?/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/api\.pinduoduo\.com\/api\/buffon\/nasus\/recommend\?/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/api\.pinduoduo\.com\/api\/caterham\/v2\/query\/goods_detail_with_tags\?/i then reject_dict(200)
+response if ${url} ~= /^https:\/\/api\.pinduoduo\.com\/api\/alexa\/homepage\/hub\?/i then response.json.delete(["result.dy_module.irregular_banner_dy", "result.icon_set", "result.search_bar_hot_query", "result.dy_module.irregular_banner_dy"])
+response if ${url} ~= /^https:\/\/api\.pinduoduo\.com\/api\/alexa\/homepage\/hub\?/i then response.json.jq(".result.bottom_tabs? |= map(select(.link | IN(\"index.html\", \"chat_list.html\", \"personal.html\"))) | .result.buffer_bottom_tabs? |= map(select(.link | IN(\"index.html\", \"chat_list.html\", \"personal.html\"))) | .result.all_top_opts |= map(del(.selected_image, .image, .height, .width))")
+response if ${url} ~= /^https:\/\/api\.pinduoduo\.com\/search\?/i then response.json.delete("expansion")
+response if ${url} ~= /^https:\/\/api\.pinduoduo\.com\/api\/philo\/personal\/hub\?/i then response.json.delete(["monthly_card_entrance", "personal_center_style_v2_vo", "icon_set.icons", "icon_set.top_personal_icons", "personal_banner"])
+response if ${url} ~= /^https:\/\/api\.pinduoduo\.com\/api\/oak\/integration\/render\?/i then response.json.delete(["bottom_section_list", "ui.bottom_section", "ui.live_section.float_info"])
+response if ${url} ~= /^https:\/\/api\.pinduoduo\.com\/api\/caterham\/v3\/query\/order_detail_group\?/i then response.json.delete("data.goods_list")
+response if ${url} ~= /^https:\/\/api\.pinduoduo\.com\/order\//i then response.json.delete(["marketing_banner_vo", "shipping.banner_above_recommend"])
+response if ${url} ~= /^https:\/\/api\.pinduoduo\.com\/api\/aristotle\/order_list_v4\?/i then response.json.jq(".orders |= map(.order_buttons |= map(del(.order_growth_tip)))")
+
+# 夸克
+response if ${url} ~= /^https:\/\/open-cms-api\.quark\.cn\/open-cms\?/i then response.json.delete(["result.cms_homepage_push_banner_config", "result.cms_as_home_capsule_entry", "result.cms_navi_category", "result.cms_shortcut", "result.cms_home_appstore_comment", "result.cms_home_festival_style_enable", "result.cms_sK_home_top_banner", "result.scan_king_home_tools_new", "result.cms_camera_skills", "result.cms_ai_home_options", "result.cms_search_direct_link", "result.cms_quark_maizeng_feature_config", "result.cms_quark_buygive_home_modal_config", "result.cms_quark_buygive_documentation_config", "result.cms_quark_lottery_maizeng_config", "result.cms_cloud_drive_activity_window", "result.cms_cloud_drive_vip_pop_url", "result.qk_vip_pay_modal", "result.camear_vip_retain_pop", "result.cms_quark_year_modal_config", "result.cms_lottery_banner", "result.camera_member_lottery_on_off", "result.cms_login_dialog_privacy_alert_enable", "result.cms_cloud_drive_transport_download_pop", "result.cms_share_dialog_universal_enable", "result.cms_quark_pay_give30d_newstyle", "result.cms_camera_asset_popup_activity_new", "result.cms_ai_vip_url_panel", "result.cms_ai_vip_member_page_basic", "result.cms_ai_vip_product_skin", "result.cms_quark_member_center_ai_card", "result.cms_video_app_grade_config", "result.cms_video_cloud_play_app_grade_config", "result.cms_video_quality_panel_config", "result.cms_worker_clouddrive_video_cloud_setting", "result.cms_cloud_transport_video_guide", "result.cms_cloud_transport_offline_backup_guide", "result.cms_cloud_normal_space_guide", "result.cms_realtime_ai_subtitle_tip_config", "result.camera_vip_pay_url", "result.vip_half_recharge_url", "result.quark_vipfull_recharge_url", "result.camera_vip_rights_and_interests_text", "result.cms_quark_keep_wangpan_rights", "result.cms_quark_action_bar_config", "result.cms_quark_coupon_experiment", "result.qkscan_member_coupon", "result.cms_cloud_backup_free_benefit_config", "result.qk_novel_noah_sdk_slot_chapter_middle", "result.qk_novel_noah_sdk_slot_bottom_banner", "result.qk_novel_noah_sdk_slot_chapter_middle_reward", "result.cms_novel_member_activity", "result.cms_novel_bookshelf_banner", "result.cms_novel_download_banner_config", "result.cms_novel_speaker_page_banner_config", "result.cms_novel_bookstore_top_tab_config", "result.cms_novel_continue_read_tips_limit_per_day", "result.novel_paid_book_ad_density_newuser", "result.cms_player_svipup_loop_config", "result.cms_player_svipup_loopani_show", "result.cms_player_rocket_ui_style", "result.cms_video_player_customize_config", "result.video_player_applayer_url_tb_aac", "result.cms_reward_advideo_auto_trigger", "result.webvideo_show_pay_before_login", "result.cms_cloud_home_nu_card_config", "result.cms_cloud_home_tool_banner", "result.cms_cloud_file_page_share_backup_guide", "result.quark_wenku_doc_activity_tpl", "result.cms_quark_full_pan_new_year", "result.cms_quark_planet_tab_banner", "result.h5_ai_studio_past_activity_list", "result.cms_user_center_welfare_config", "result.cms_user_center_welfare_farm_entry_config", "result.cms_babafarm_gray_config", "result.cms_utoken_direct_jump_config", "result.cms_quark_ios_panel_alipay_coupon_banner", "result.cms_cloud_share_benefit", "result.cms_bind_phone_fail_config", "result.cms_bind_conflict_guide", "result.cms_group_helper_guide_config", "result.cms_long_pic_share_operation_config", "result.noah_search_mid_ad_enable", "result.cms_search_page_input_history_config", "result.cms_push_lead_manage", "result.cms_limited_time_free_operating", "result.cloud_drive_tool_list", "result.cms_utoken_blocking_dialog_config", "result.cms_skip_button_switch", "result.cms_cloud_offline_common_guide", "result.cd_video_player_preview_tips_enable", "result.cms_ai_vip_product_price_style", "result.questionscpagebanner", "result.qkscan_coupon_time", "result.cms_novel_listen_act_enable", "result.cms_ai_vip_product_banner_config", "result.cms_as_zone_operation_banner_create", "result.cms_user_center_vip_page_config", "result.camera_pay_detention", "result.cps_pfc", "result.ucv_cloud_buoy_show_interval", "result.cms_cloud_drive_novice_gift_strategy", "result.cms_quark_ios_alipay_coupon_banner", "result.cms_transport_offline_topbar_title", "result.qks_paisou_video_vip_type", "result.qks_ab_vip_year_default", "result.cms_homepage_abtest", "result.cms_camera_export_pay_guide_config", "result.cms_tools_download_scanking_tips_config", "result.book_bean_info_url", "result.camera_member_lottery_on_off_new", "result.learning_home_popup_op_test", "result.cms_pullactive_enable", "result.cd_not_in_user_year_sku", "result.ab_clouddrive_backup_free_share", "result.cms_quark_doodle", "result.cms_camera_asset_activity_banner_list", "result.camera_keep_modal", "result.cms_quark_88vip_verify_modal", "result.cms_cloud_compress_pay_enable", "result.cms_novel_relate_live_book_switch", "result.cms_svip_resolution_toast_count", "result.cd_enable_evo_search_recom_q_start_icon", "result.cms_ai_tool_history_type_config", "result.cms_bookstore_home_toolbar_point", "result.cms_cloud_save_success_toast_ui", "result.cms_qkvip_panel_go_pay_success", "result.cms_ucv_cloud_video_entry", "result.cms_app_act_mgr_data", "result.camera_member_center", "result.minipg_ads_whitelist", "result.cms_clouddrive_background_lead_visible", "result.cms_video_app_grade_operaion_enable", "result.cms_novel_coin_reward_config", "result.sk_quark_learning_logo_deeplink", "result.cms_alipay_marketing_banner", "result.qks_vip_center_pay_ab", "result.qkscan_payment", "result.cms_ai_bizentry_config", "result.cms_quark_youku_ent", "result.cms_quark_novel_notice_dialog", "result.airship_config", "result.cms_quark_cloud_yxxx_config", "result.cd_enable_cloud_drive_entrance_video", "result.cms_cloud_drive_home_tool_new", "result.cms_bookstore_hottab_url", "result.cd_not_in_use_repurchase", "result.camera_trial_url", "result.enable_miniframe_prefetch_ad", "result.cms_cloud_drive_member_skin", "result.walle_enable_regist_ecmodel", "result.cms_smart_toolbox_config", "result.qks_paisou_vip_charges_ab", "result.cms_quark_zvip_tab_show_full", "result.cms_pre_order_on_agreement", "result.cms_camera_big_float_window", "result.cms_player_svipup_enterani_show", "result.cms_history_login_banner_and_bubble_config", "result.clouddrive_backup_benefit_config_album", "result.cms_cloud_drive_secret_limit_label", "result.camera_vip_union_activity", "result.cms_cloud_drive_booklist", "result.cms_quark_panel_coupon_archive", "result.cd_spotlight_cms", "result.cms_qkvf_rec_request_inverse_pos", "result.camera_question_search_toolbar_op", "result.cd_video_player_cloud_toast_show_delay", "result.cms_user_center_feature_enable", "result.cms_bookmarkAndHistory_banner_ad", "result.cms_ai_write_operation_banner_config", "result.novel_ad_flbanner_close", "result.cms_camera_ultraman_config", "result.noah_content_embed_ad_hc_vertical_scale_style", "result.cms_scanking_home_bubble", "result.cms_user_center", "result.cms_page_translate_enable_recommend", "result.cms_poplayer_main", "result.sk_enable_edit_page_recommend_data_opt", "result.cms_big_float_window", "result.cms_ucv_cloud_playback_operational", "result.cms_scanking_sign_in_switch", "result.camera_vip_coupon_discount_test", "result.idfa_auth_config", "result.cms_videoplayer_op_tips", "result.webvideo_buffer_new_tips_config", "result.h5_ai_studio_activity_list", "result.qks_tools_market", "result.cms_homepage_bubble_config", "result.cms_search_keyword_alter_link", "result.novel_farm_reader_remain_dialog_switch", "result.cd_not_in_use_counter_svipplus_monthly_price", "result.cms_scanking_pay_vip_retain_switch", "result.cms_ai_glasses_interceptor_config", "result.ai_quark_chat_ios_navbar_model_list", "result.chat_toolbar_live_url", "result.cms_search_page_invitation_code_panel_config", "result.cms_move_home_navigation_digger_config", "result.qks_deep_souti_pop", "result.cms_share_link_config", "result.camera_share_link_config", "result.cms_user_center_renewal_config", "result.cms_ai_home_ui_config", "result.cms_user_center_health_record_config", "result.cms_cloud_drive_share_icon", "result.cms_cloud_drive_search_result_card_switch", "result.export_file_tips", "result.cms_ai_chat_vertical_instructions", "result.cms_diamond_navi_area_multipage", "result.cms_web_picture_long_click_menu", "result.qk_aidesign_member_rights", "result.qkscan_svip_member_rights", "result.cms_quark_member_center_pay_success_card", "result.cms_newux_show_svip_entry_enable", "result.clouddrive_backup_benefit_config", "result.cms_player_reward_trace_enable", "result.cms_push_lead_head_enable", "result.camera_vip_lottery_checked_goods", "result.pay_detainment_stack_bond_styles", "result.cms_cloud_home_backup_card_config", "result.cms_ai_vip_url_full", "result.cms_video_ai_guide_setting", "result.cms_cloud_device_unbackup_text", "result.cms_novel_audio_reward_config", "result.cms_quark_luckin_coupon_text", "result.as_publisher_activity_entry", "result.cms_cloud_nu_space_rights", "result.cd_not_in_use_vipupgrade", "result.cms_web_player_dml_enhance_config", "result.cms_cloud_backup_album_guide_control", "result.cms_web_content_type_price_config", "result.cms_reflow_activity_jump_deeplink", "result.cms_homepage_searchbar_left_btn_lottie", "result.cms_user_center_welfare_switch", "result.paisou_benefit_banner", "result.cms_ai_vip_price_not_use", "result.cms_cloud_share_detail_space_overrun_config", "result.scan_svip_first_buy_pop", "result.cms_asr_equity_h5_url", "result.cd_not_in_use_djtest_choujiang", "result.cms_cloud_drive_file_page_close_switch", "result.cd_not_in_use_bucha", "result.cms_subscribre_renew_modal_experimental", "result.cloud_collect_fast_save_title", "result.cms_quark_vip_full_page_text", "result.cms_camera_border_poster", "result.camera_svipplus_pay_url", "result.cms_qurak_clouddrive_full_page_exit_config", "result.copy_ab_clouddrive_nu_unzip_try", "result.cms_quark_scan_card_config", "result.cloud_video_privilege_panel_config", "result.cms_mobile_binding_config", "result.cms_novel_auto_buy", "result.cms_player_reward_video_config", "result.cms_clouddrive_vip_extra_pay_banner", "result.gaokao_zhiyuan_export_svip", "result.camera_vip_enable_new_pay_style", "result.cms_ai_resolution_toast_count", "result.cd_not_in_use_djtest_tianmao", "result.cms_ai_vip_product_activity_config", "result.cms_cloud_drive_activity_id", "result.cms_cloud_home_user_config", "result.qks_paisou_ab_video_free_times", "result.cms_quark_pay_full_page_first_modal_month", "result.video_cloud_play_normal_loading_config", "result.camera_vip_venue_switch", "result.cms_wenku_vip_pop_experiment", "result.cms_as_zone_operation_banner_creat", "result.cms_cloud_pdf_image_pay_enable", "result.appworker_offline_config_list", "result.cms_intelligent_protect_tip_config", "result.cms_home_appstore_comment_native_item", "result.cms_cloud_recommend_hot_search_tab", "result.camera_pay_scene_window", "result.cms_player_dialog_header", "result.cms_quark_user_agreement_activity", "result.minipg_ads_switch_quark", "result.cms_quark_member_center_header", "result.gaokao_nu_vip_grant", "result.cms_novel_vip_product_price_style", "result.cms_novel_free_ad_config", "result.cms_matrix_config", "result.cms_home_navi_shortcuts_config", "result.novel_farm_welfare_switch", "result.as_home_idea_card_img_static", "result.cms_player_res_trial_enable", "result.copy_ab_bookcity_feed", "result.cms_space_growth", "result.qkscan_year_more_coupon", "result.cd_not_in_use_pdflimit", "result.cms_mini_login_panel", "result.cms_ucv_cloud_drive_video_entry_switch", "result.cms_player_right_fixed_resolution_list_show", "result.cms_novel_coin_read_task_idle_interval", "result.ucv_cloud_buoy_start_interval", "result.cms_custom_module_config", "result.cms_home_menu_header_top", "result.sk_home_vip_url", "result.camera_assets_membership_url", "result.cms_novel_reader_insert_page_banner_config", "result.qks_paisou_vip_charges", "result.cms_quark_pay_modal_down_taobao", "result.cms_player_top_bo_taobao_not_aac_config", "result.cms_cloud_drive_file_tree_banner", "result.cd_not_in_use_msfugou", "result.quark_miaosha_c_test", "result.cd_not_in_use_2sku", "result.not_in_use_jiasuquan", "result.cms_cloud_common_page_banner", "result.cms_nvp_cloud_welcome_ui", "result.cd_cloud_paytypes_expect_zvip", "result.cms_home_toolbar_baby", "result.cloud_drive_share_notification_config", "result.cms_ipad_lead", "result.aidesign_svip_member_center", "result.camera_vip_superposition_ticket", "result.cms_clouddrive_aigc_pic_config", "result.camera_vip_ios_alipay", "result.qk_bookstore_rankpage_url", "result.cms_cloud_drive_file_page_clean_guide", "result.cms_novel_post_share_code", "result.cms_feed_bubble_in_home_page_bottom", "result.cms_cloud_home_operate_widget", "result.cms_sm_ad_request_handle_enable", "result.cms_asr_main_activity_window", "result.cms_player_download_entry_show", "result.qkscan_member_rights", "result.webvideo_content_type_price_enable", "result.qkscan_member_style", "result.qk_correction_recommend_modal", "result.cms_cloud_none_space_control_new", "result.cms_cloud_backup_free_space_benefit", "result.cd_not_in_use_annual_repurchase_coupon", "result.quark_study_enable_new_vip_pay_component", "result.qks_pay_strategy_enable", "result.cms_cloud_player_av_quailty_88vip_uselimit", "result.cms_quark_cloud_member_pay_qa", "result.novel_ad_space_count", "result.sk_idphoto_show_cloud_print", "result.quark-countdown-2025", "result.cms_quark_sug_card", "result.cloud_drive_home_tool_banner", "result.cms_quark_zvip_tab_show", "result.cms_Login_guide_encomcor", "result.camera_vip_price", "result.qks_ab_vip_pay_combo", "result.cd_not_in_use_savetonum", "result.cms_camera_tool_set_pic", "result.cms_web_page_export_recom_tips_config", "result.cd_not_in_use_cuxiao", "result.camera_duguang_freetrial", "result.cms_navi_study_bubble_booklist", "result.cms_navi_add_operation_new", "result.cms_cloud_drive_hot_search_type", "result.camera_vip_year_goods_ctrl", "result.cms_search_ai_tool_recommend_word_config", "result.cms_novel_bookstore_tab_blue_dot_config", "result.webvideo_toast_save_click_return", "result.cd_not_in_use_djtest_zc", "result.cms_home_navigation_olduser", "result.cms_quark_zvip_pay_update_operation", "result.cms_web_picmode_guide_config", "result.cms_cloud_pdf_office_pay_enable", "result.cms_quark_pay_panel_video_banner_switch", "result.vip_half_experience_url", "result.cms_cloud_drive_share_subtitle", "result.cms_quark_anniversary_2023_main", "result.camera_paint_free_count", "result.cms_qkvip_go_pay_success", "result.cms_quark_miaosha_test", "result.cd_max_menu_widgets_center_guide_dis_times", "result.cms_dongfeng_common_config", "result.cd_not_in_use_djtest_shougou", "result.qks_feedback_lottery_switch", "result.duguang_word_2sku", "result.qks_vip_index_state", "result.cms_navi_business_operation", "result.webvideo_content_type_price_config", "result.cms_ai_tools_navi_url", "result.cms_ai_agent_list_config", "result.cms_home_navigation_alter", "result.cms_mobilize_external_app_config", "result.cms_novel_comic_video_home_page_url", "result.cms_homepage_ai_tool_dynamic_config", "result.cms_ai_chat_default_welcome", "result.cms_cloud_drive_cloud_tool", "result.cms_navi_intelligence_config", "result.cms_cloud_drive_transport_header_banner", "result.cms_camera_alltools_config", "result.cms_search_page_ai_image_genneration", "result.cms_download_scanking_app_config", "result.cms_user_center_welfare_farm_new_config", "result.cms_quark_member_center_bannerList", "result.cms_my_list_part_config", "result.cms_cloud_drive_audio_tree_banner", "result.cms_search_page_ai_scholarship_config", "result.camera_teachers_day_goods_banner", "result.chat_ai_chat_with_uvlckfargcmaqryx_config", "result.ai_camera_wjk_act", "result.cms_share_bookmark_black_list", "result.cms_navisync_blacklist", "result.cms_web_page_print_pdf_render_allow_list", "result.cms_video_detect_t0_js", "result.noah_search_mid_page_ad_list", "result.qk_novel_noah_sdk_chapter_middle_enable", "result.webvideo_thread_speed_config", "result.cms_ai_vip_member_panel_header_config", "result.cms_cloud_none_space_guide", "result.cms_ai_chat_enable_alg_recommend_paa", "result.quark_study_home_cards_style", "result.cms_home_navigation", "result.test_zhifubao_miaosha", "result.cms_cloud_video_upload_vip_enable", "result.camera_alltools_config", "result.cms_cloud_drive_share_pc_guide", "result.sk_export_frombiz_homeurl", "result.cms_bind_conflict_guide_v2", "result.sk_bilingual_comparison_page_url", "result.camera_table_url", "result.cms_sgi_search_web_enable", "result.cms_cloud_home_novel", "result.picture_editor_entrance", "result.cms_cloud_drive_pc_switch", "result.cms_as_creator_tabs", "result.cms_camera_tips_dialog", "result.cms_quark_user_center_login_config", "result.ai_generate_bar_global_config", "result.cms_offline_save_trace_enable", "result.cms_ai_search_entry_url", "result.cms_quark_toolbar_lottie", "result.cms_camera_trytab_default", "result.cms_homepage_navigation_ai_tool_config_v2", "result.cms_navi_modify_operation", "result.cms_cloud_video_resolution_download_select", "result.cms_cloud_download_play_video_replace", "result.as_cut_option_config", "result.sk_assets_editor_ocr_page_url_new", "result.cms_quark_pan_stay", "result.cms_sniffer_float_view_action_config", "result.cms_common_prefetch_proxy_switch", "result.cloud_drive_document_pdf_config", "result.cms_novel_unsupport_book_tips", "result.cms_user_center_message_landing_page_key", "result.cms_client_verify_time_stamp_enable", "result.cms_ai_editor_lottie_res", "result.cms_quark_cloud_anniversary_modal_show", "result.cms_quark_clouddrive_nologin_header", "result.cms_sgi_web_window_pars_enable", "result.cms_shortcut_game_enable", "result.sk_translate_view_time_count", "result.cms_app_monitor_event_enable", "result.system_short_web_middlware_url", "result.cms_novel_shelf_pre_load", "result.cms_quark_cloud_drive_first_screen_monthly_popup_config", "result.cms_sniff_compliance_switch", "result.qk_bookstore_homepage_url", "result.cms_novel_intercept_switch_new", "result.cms_reader_user_no_ad_switch", "result.cms_ai_publish_success_jump", "result.cms_sgi_container_pars_config_v2", "result.chat_ai_chat_with__config", "result.cd_nvp_dolby_vision_black_fmt", "result.cms_ai_novel_livebg_config", "result.cms_cloud_login_bind_phone", "result.cms_search_page_input_hint", "result.enable_url_security_sign", "result.cms_camera_word_use_app_state", "result.cms_cloud_drive_clean_backup_dump_file_enable", "result.cd_appllo_peload_wwan_enable", "result.cms_reader_nav_search_switch", "result.cms_cloud_drive_backup_guide", "result.web_perf_whitescreen_detechtime", "result.cms_web_sniffer_ui_config", "result.cms_camera_aivqa_history_url", "result.study_camera_correct_sample_list_data", "result.vc_transcode_video_playlet_ctrl", "result.cms_asr_feedback_group_num", "result.voice_speech_abtest", "result.cms_search_page_ai_writer_config_v2", "result.cms_ai_chat_enable_welcome_recommend_paa", "result.cms_empty_tingji_realtime", "result.chat_aicam_upload_in_ahead", "result.cms_web_verify_itms_service_link_enable", "result.ucdc_probe_enable", "result.cms_camera_float_view", "result.unet_tcp_socket_send_buffer_hosts", "result.cms_camera_subtab_default_config", "result.test_for_platform_v2", "result.quark_study_xuanfuchuangsouti_guide", "result.short_cut_new_covid_news", "result.qk_enable_quarkbaby_hint", "result.cd_enable_study_main_page_open_itcp", "result.cloud_drive_referer", "result.qk_planet_detail_native", "result.uccv_episode_autoplay_preload", "result.cms_novel_tts_speaker_default", "result.camera_debug_task_name", "result.camera_cutting_on_cloud", "result.camera_word_enbale_demand_ocr", "result.cms_cloud_delete_download_directly_enable", "result.apollo_cloud_play_race_speed_config", "result.no_effect_quarkcd_paixu5", "result.cd_sandbox_scan_max_dir_maxDirHierarchy", "result.cms_ai_studio_tem_h5_url", "result.cd_dl_low_speed_detect_config", "result.cms_sgi_search_perfetch_enable", "result.cms_asr_manaual_stream_stop", "result.cms_auto_translate_tip_display_time", "result.cms_bookmark_prefetch_config", "result.miracast_start_pos_impl_on_sdk", "result.cms_web_link_long_click_menu", "result.cms_web_load_stat_switch", "result.cms_ai_tool_history_enable", "result.cms_common_prefetch_white_list", "result.cloud_drive_backup_invalid_record_clear", "result.camera_idphoto_filters", "result.cms_player_show_loading_toast_enable", "result.cd_not_in_use_djtest_cms_player_top_bo_taobao_not_aac_config", "result.general_search_user_research_survey", "result.video_player_appworker_host_black_list", "result.nvp_ai_vision_use_mode", "result.cms_universal_use_app_state_data", "result.cms_home_page_navi_editor_config", "result.u_vsibkre", "result.cms_enable_flutter_scanking_photo_sniffer", "result.qk_player_disable_apollo", "result.cms_quark_cloud_drive_downgrade_code_switch", "result.cms_novel_boost_config", "result.cms_search_version_202512", "result.cd_apollo_pip_auto_start", "result.cms_search_page_config", "result.cms_ai_agreement_config", "result.cms_novel_audiobook_cover_square", "result.cd_enable_sandbox_space_scan", "result.cms_idcard_show_cloud_print", "result.sk_camera_office_in_all", "result.web_video_apollo_detect_play_info_params", "result.cms_cloud_new_doc_preview_switch", "result.cd_wk_net_thread_enable", "result.upaas_stat_self_enable", "result.cms_novel_upgrade_download_content", "result.pre_words", "result.cms_as_zone_operation_banner_feed", "result.cms_novel_read_time_guide_nu_enable", "result.cms_novel_read_mode_ts_transcode", "result.ulive_msg_cache_purge_count", "result.cms_camera_enable_online_table", "result.u_vsibkrh", "result.camera_svip_pay_url", "result.cd_not_in_use_feiNU", "result.cms_ai_chat_live_prerender_config", "result.cms_home_chat_guide_config", "result.cms_cloudrive_presuccess_enable", "result.web_video_detect_enable", "result.cms_js_common_white_list", "result.cms_quick_translate_badge_switch", "result.ucv_webvideo_buoy_show_interval", "result.cms_cloud_save_manual_enable", "result.cms_qkaccount_appeal", "result.cms_clouddrive_delete_check_option_dialog", "result.cms_user_center_enable", "result.cms_titlepage_turn_animate_key", "result.cms_ai_novel_chat_realname_auth", "result.cms_camera_my_activity_banner", "result.cms_novel_web_preload_forward_limit", "result.cms_navi_choice_lottie", "result.clouddrive_share_new_version_switch", "result.cms_camera_tab_funcs_list_auto_show", "result.chat_ai_health_with__config", "result.cms_ucv_cloud_buoy_operational", "result.navi_dynamic_operation", "result.cms_aieditor_toolbar", "result.cms_quark_user_center_message_url", "result.cms_home_toolbar", "result.camera_word_url", "result.cms_cloud_download_zero_timelimit", "result.cms_camera_gather_tab_v2", "result.cms_bookstore_tab_new", "result.webvideo_ignore_ts_hash_when_save", "result.ai_studio_search_enable", "result.cast_use_flutter_page_e", "result.camera_enable_smartwipe_screenshot_sheild", "result.cms_book_barcode_assistant_url", "result.cms_bookmark_user_data_isolation_switch", "result.cms_camera_deeplink_mapper", "result.clouddrive_album_category_card_style", "result.cms_web_smart_toolbox_config", "result.cms_home_doodle_res_font", "result.not_in_use_fgtest2", "result.cms_mobile_auth_global_config", "result.ulive_preload_liveroom_enable", "result.cms_flutter_bookstore_enable", "result.asr_model_type", "result.cms_novel_html_extract_switch", "result.cms_camera_panel_acitve_onoff", "result.cms_keep_default_ua_biz_host_list", "result.cms_ai_search_enable_cache", "result.cms_membership_page_url", "result.upgrade_notify_control", "result.cms_offline_to_cloud_exit_switch", "result.cd_apollo_core_config_str", "result.cd_web_video_global_hybrider_enable", "result.cms_setting_usercenter_mode_enable", "result.cms_uiapplication_openurl_hook_enable", "result.cms_chat_tab_container_enable", "result.cms_player_enhance_entry_bef_prepard", "result.personal_folder_env", "result.cms_proxy_report_switch", "result.ucdc_server_ip", "result.cd_init_weex_checkupdate_enable", "result.ta_embedwebview_white_domain_list", "result.webvideo_apollo_str_hp_config", "result.cms_aieditor_panel", "result.cms_wk_net_agency_mode_config", "result.webvideo_ignore_download_hash_when_apollo", "result.cms_cloud_unet_enable_fail_fast", "result.cd_enable_web_video_emabed_play", "result.qks_souti_ai_video_option", "result.cms_search_page_ai_writer_config", "result.ai_chat_image_query_list", "result.cms_novel_myhistory_switch", "result.cms_img_history_forward_url", "result.cms_browser_3d_nu", "result.cms_send_page_to_pc_blacklist", "result.cd_float_screenshoot_answer_guide_page", "result.camera_asset_host", "result.ucv_backup_series_to_dj_player", "result.cms_as_create_req_edit_content", "result.cms_web_href_load_guard_config", "result.cms_as_inputbar", "result.file_detect_strategy", "result.cms_quark_ocr_pdf_2_txt_way", "result.cms_group_active_days_config", "result.sniff_float_ball_anim_repeat_count", "result.cms_http_scheme_intercept_enable", "result.cms_request_cloud_save_permission_enable", "result.cd_new_player_stop_last_video", "result.camera_album_content", "result.cms_quark_user_agreement", "result.cms_quark_pan_scene", "result.cms_cloud_drive_user_banner", "result.cms_cloud_drive_new_user_guide", "result.cms_cloud_drive_novice_gift_pack", "result.cms_quark_clouddrive_member_anniversay", "result.cms_quark_pan_activity", "result.cms_qkvip_act_banner", "result.cms_qkvip_full_only_selected", "result.cms_player_svip_panel_ui_config", "result.cms_player_cloudsave_tip_config", "result.cms_player_cloud_hdtrial_config", "result.cms_sniffer_bar_freezes_speed_config", "result.cms_ucv_cloud_drive_video_freewatch_switch", "result.cms_video_ai_guide_setting1", "result.cms_novel_end_recommend_config", "result.cms_novel_end_recommend_clouddrive_config", "result.cms_novel_tts_ad_cover_config", "result.cms_novel_tts_cover_ad_config", "result.cms_novel_read_tips_show_seconds", "result.cms_reader_webnovel_recommend_switch", "result.cms_novel_book_score_tip_config", "result.cms_camera_member_banner", "result.cms_camera_asset_activity_banner", "result.cms_camera_asset_popup_activity", "result.cms_camera_show_coupon_popup", "result.camera_vip_lottie_universal_popup", "result.camera_vip_year_goods_ctrl_new_logic", "result.cms_camera_scandoc_filters", "result.camera_footer_study_tips_config", "result.cms_ai_vip_product_floating_angle", "result.cms_aieditor_user_guide", "result.cms_ai_quarkman_entry_url", "result.cms_ai_tool_login_guide_time", "result.aidesign_homepage_bigtool", "result.cms_navi_delete_operation_new", "result.cms_navi_delete_operation_new2", "result.cms_home_navigation_new", "result.cms_cloud_transport_svip_banner_show_top", "result.cms_cloud_offline_backup_sheet", "result.cms_cloud_drive_single_backup_guide", "result.cms_cloud_drive_live_photo_backup_guide", "result.cms_cloud_main_hot_search_tab", "result.cms_user_center_bussiness_banner_config", "result.cms_quark_pay_update_banner", "result.cms_quark_cloud_pay_types_list", "result.cms_quark_cloud_avg_price_display", "result.cms_quark_subscribe_entry", "result.cms_show_toolbox_upgrade_banner_enable", "result.cms_sc_ad_request_handle_enable", "result.noah_content_embed_ad_vertical_scale_style", "result.cms_quark_modal_year_modal_config", "result.cms_quark_keep_modal_config", "result.cms_entity_migration_config", "result.glass_bluetooth_scan", "result.cms_bubble", "result.cloud_drive_home_user_guide_text", "result.cloud_series_video_play_guide_config", "result.cms_web_sniff_float_tool_enable", "result.ab_clouddrive_backup_free_cloudsave", "result.cd_not_in_use_counter_lottery", "result.cms_quark_alipay_tag", "result.cd_tinyapp_share_url", "result.cms_web_accs_err_guide_config", "result.cms_link_search_direct", "result.qks_ab_paisou_sc_entry"])
+request if ${url} ~= /^https:\/\/stars\.shuqireader\.com\/kkios\/render\/load\/resource\/app$/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/stars\.shuqireader\.com\/kkios\/render\/load\/resource\/appConfig$/i then reject_dict(200)
+
+# 京东
+request if ${url} ~= /^https:\/\/api\.m\.jd\.com\/client\.action\?functionId=(searchBoxWord|stationPullService|uniformRecommend[06])/i then reject_dict(200)
+response if ${url} ~= /^https:\/\/api\.m\.jd\.com\/client\.action\?functionId=basicConfig/i then response.json.replace(["data.JDMessage.socketmonitor.isSocketEstablishedAhead", "data.JDMessage.socketmonitor.isSocketReport", "data.JDHttpToolKit.httpdns.httpdns"], [0, 0, 0])
+
+# 高德地图
+request if ${url} ~= /^https:\/\/m5\.amap\.com\/ws\/valueadded\/alimama\/splash_screen\?/i then reject_dict(200)
+response if ${url} ~= /^https:\/\/m5\.amap\.com\/ws\/shield\/frogserver\/aocs\/updatable\/1\?/i then response.json.delete(["data.adStatementConfig", "data.adCustomerRetainArchitecture", "data.adImEntryConfig", "data.adVenueConfig", "data.adPerfSwitch", "data.EndNaviC3AdCard", "data.infoCpcReport", "data.hotsaleConfig", "data.marketing_resource_config", "data.coupon_risk_asac", "data.commonCouponSceneLog", "data.sug_coupon_opt", "data.giftEntryConfig", "data.splashscreen", "data.SplashScreenControl", "data.splashview_config", "data.feedback_banner", "data.TrainOrderBanner", "data.nearby_business_popup", "data.shortcut_popup_frequency", "data.tel_retention_popup", "data.hotel_activity", "data.taxi_activity", "data.hotel_privilege", "data.sportsActivityConfig", "data.activity_qingke_contry_control", "data.920bestwishes", "data.custom_consultdata.widget_guide", "data.free_ride", "data.homepage_resource_config", "data.home_message_guide", "data.hotel_tipsicon", "data.sur_bar", "data.nearby_map_entry_guide", "data.comment_info", "data.small_biz_index", "data.small_biz_fun", "data.setpagesearch", "data.wallet"])
+response if ${url} ~= /^https:\/\/m5\.amap\.com\/ws\/shield\/frogserver\/aocs\/updatable\/1\?/i then response.json.jq_file("https://kelee.one/Resource/JQLang/Amap/updatable.jq")
+response if ${url} ~= /^https:\/\/m5\.amap\.com\/ws\/shield\/dsp\/profile\/index\/nodefaasv3\?/i then response.json.jq("del(.data.tipData, .data.wallet) | .data.cardList |= map(select(.dataKey == \"MineNewFootprintCard\" or .dataKey == \"MineNewBEntranceCardV4\")) | (.data.cardList[] | select(.dataKey == \"MineNewBEntranceCardV4\") | .content.entranceList_1) |= map(select(.id == 7 or .id == 8 or .id == 10 or .id == 17)) | (.data.cardList[] | select(.dataKey == \"MineNewBEntranceCardV4\") | .content.entranceList_2) |= map(select(.id == 32 or .id == 4 or .id == 9 or .id == 16 or .id == 14))")
+response if ${url} ~= /^https:\/\/m5\.amap\.com\/ws\/shield\/scene\/recommend\?/i then response.json.delete("$.data.shadingWords")
+response if ${url} ~= /^https:\/\/m5\.amap\.com\/ws\/shield\/scene\/recommend\?/i then response.json.jq(".data.toolsRecommend.data.default |= map(select(.id == 102 or .id == 103 or .id == 106 or .id == 151))")
+response if ${url} ~= /^https:\/\/sns\.amap\.com\/ws\/opc\/tools\/list\?/i then response.json.jq("(if (type == \"object\") and ((.data | type) == \"object\") and ((.data.category | type) == \"array\") then (.data.category[] | select(type == \"object\") | .tools | select(type == \"array\") | .[] | select(type == \"object\")) |= del(.tips) else . end) | (if (type == \"object\") and ((.data | type) == \"object\") and ((.data.category | type) == \"array\") then (.data.category[] | select(type == \"object\") | .tools | select(type == \"array\")) |= map(select(if type == \"object\" then (((.id | type) == \"string\" and .id == \"547\") or ((.id | type) == \"number\" and .id == 547)) | not else true end)) else . end)")
+request if ${url} ~= /^https:\/\/m5\.amap\.com\/ws\/faas\/amap-navigation\/main-page-assets\?/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/m5\.amap\.com\/ws\/faas\/amap-navigation\/main-page-aiqs\?/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/ai\.amap\.com\/v1\/ai_rec\/home_qs\?/i then reject_dict(200)
+response if ${url} ~= /^https:\/\/info\.amap\.com\/ws\/c3frontend\/af-search\/search\?/i then response.json.jq("if (try (.data.modules.quickLink.data.list | type) catch null) == \"array\" then .data.modules.quickLink.data.list |= map(if type == \"object\" and (.badge | type) == \"object\" and (.badge | has(\"text\")) then .badge.text = \"\" else . end) else . end")
+request if ${url} ~= /^https:\/\/m5-zb\.amap\.com\/ws\/promotion-web\/resource(\/home)?\?/i then reject_dict(200)
+response if ${url} ~= /^https:\/\/m5-zb\.amap\.com\/ws\/boss\/car\/order\/content_info\?/i then response.json.delete(["data.lubanData.skin", "data.lubanData.kingToolBoxBubble", "data.lubanData.popup"])
+response if ${url} ~= /^https:\/\/m5-zb\.amap\.com\/ws\/boss\/car\/order\/content_info\?/i then response.json.jq("def on_path($p; $t; f): if (try (getpath($p) | type == $t) catch false) then getpath($p) |= f else . end; (on_path([\"data\",\"lubanData\",\"kingToolSort\",\"dataList\"]; \"array\"; map(if type == \"object\" then (if ((try (.biz | type) catch null) == \"object\" and (.biz | has(\"kingToolIdList\"))) then (.biz.kingToolIdList |= (if type == \"array\" then map(select(IN(\"dache_toolbox_GDIntercity\",\"dache_toolbox_hitch\",\"dache_toolbox_chauffeur\",\"dache_toolbox_quality\",\"dache_toolbox_charterCar\"))) else . end)) else . end) else . end))) | on_path([\"data\",\"lubanData\",\"kingToolBox\",\"dataList\"]; \"array\"; map(select(if type == \"object\" then ((try (.biz | type) catch null) == \"object\" and (try (.biz.id | IN(\"dache_toolbox_GDIntercity\",\"dache_toolbox_hitch\",\"dache_toolbox_chauffeur\",\"dache_toolbox_quality\",\"dache_toolbox_charterCar\")) catch false)) else false end)))")
+response if ${url} ~= /^https:\/\/m5-zb\.amap\.com\/ws\/amap\/hitch\/passenger\/content_info\?/i then response.json.delete("data.lubanData.banner")
+request if ${url} ~= /^https:\/\/m5\.amap\.com\/ws\/info_bff\/rankingCard\?/i then reject_dict(200)
+response if ${url} ~= /^https:\/\/center\.amap\.com\/ws\/amc\/server\/conv\/raise_list\?/i then response.json.jq("def on_path($p; $t; f): if (try (getpath($p) | type == $t) catch false) then getpath($p) |= f else . end; on_path([\"data\",\"dataList\"]; \"array\"; map(select(if type == \"object\" then (has(\"categoryId\") or ((.data | type) == \"object\" and .data.id == \"M_100007\")) else false end)))")
+response if ${url} ~= /^https:\/\/m5\.amap\.com\/ws\/shield\/scene\/recommend\?/i then response.json.jq("(if (try (.data.shadingWords.data.regions.content | type == \"array\") catch false) then .data.shadingWords.data.regions.content |= map(select(IN(\"quickLink\",\"history\",\"searchFind\"))) else . end) | (if (try (.data.shadingWords.data.modules | type == \"object\") catch false) then .data.shadingWords.data.modules |= with_entries(select(.key == \"searchFind\")) else . end)")
+response if ${url} ~= /^https:\/\/info\.amap\.com\/ws\/shield\/search_business\/process\/middleLayer\/sug\?/i then response.json.jq(".tip_list |= map(select(.tip.task_tag == \"common_content_general\" or .tip.task_tag == \"sp\"))")
+response if ${url} ~= /^https:\/\/info\.amap\.com\/ws\/shield\/search\/poi\/detail\?/i then response.json.delete(["data.modules.combineReviews.data.write_comment.btnRightTag", "data.modules.combineReviews.data.write_comment.title"])
+response if ${url} ~= /^https:\/\/info\.amap\.com\/ws\/shield\/search\/poi\/detail\?/i then response.json.jq_file("https://kelee.one/Resource/JQLang/Amap/search_poi_detail.jq")
+response if ${url} ~= /^https:\/\/m5\.amap\.com\/ws\/smartui\/near_recommend\?/i then response.json.delete("data.operation_activity")
+request if ${url} ~= /^https:\/\/m5\.amap\.com\/ws\/shield\/search_business\/process\/marketingOperationStructured\?/i then reject_dict(200)
+
+# 滴滴
+response if ${url} ~= /^https:\/\/as\.xiaojukeji\.com\/ep\/as\/toggles\?/i then response.json.jq(".data |= map(select(.name != \"isUseNetConnectivity\") | .assign.args.rootca_pin = 0 | .assign.args.sni_list = {})")
+response if ${url} ~= /^https:\/\/conf\.diditaxi\.com\.cn\/homepage\/v\d\/other\/slow\?/i then response.json.delete(["data.order_cards.new_loss_banner_card", "data.order_cards.call_car_card_80"])
+response if ${url} ~= /^https:\/\/conf\.diditaxi\.com\.cn\/homepage\/v\d\/core\?/i then response.json.jq(".data.order_cards.nav_list_card.data |= map(select(.nav_id == \"dache_anycar\" or .nav_id == \"carmate\" or .nav_id == \"driverservice\" or .nav_id == \"zhandianbashi\" or .nav_id == \"pincheche\" or .nav_id == \"bike\" or .nav_id == \"nav_more_v3\")) | .data.disorder_cards.top_nav_list.data.top_nav_info |= map(select(.nav_id == \"chu_xing\" or .nav_id == \"freight_cargo\"))")
+response if ${url} ~= /^https:\/\/conf\.diditaxi\.com\.cn\/homepage\/v\d\/other\/fast\?/i then response.json.delete(["data.disorder_cards.communicate_card", "data.disorder_cards.not_login_bottom_bar", "data.disorder_cards.riding_code_card", "data.order_cards", "data.disorder_cards.car_icon.data.icon_info_new_agreement"])
+response if ${url} ~= /^https:\/\/common\.diditaxi\.com\.cn\/common\/v\d\/usercenter\/layout/i then response.json.jq(".data |= (.instances |= (to_entries | map(select(.key as $k | [\"center_base_info_card\", \"center_tool_card\", \"center_wallet_finance_card\", \"center_order_related_card\"] | index($k))) | from_entries)) | .data.instances.center_wallet_finance_card.data.view_info |= map(select(.title == \"优惠卡券\"))")
+request if ${url} ~= /^https:\/\/res\.xiaojukeji\.com\/resapi\/activity\/mget\?/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/res\.xiaojukeji\.com\/resapi\/activity\/mget$/i then reject_dict(200)
+response if ${url} ~= /^https:\/\/conf\.diditaxi\.com\.cn\/homepage\/v\d\/other\/fast\?/i then response.json.delete(["data.disorder_cards.guess_card", "data.disorder_cards.scene_list_card"])
+response if ${url} ~= /^https:\/\/api\.udache\.com\/gulfstream\/porsche\/v\d\/dache_homepage_layout\?/i then response.json.delete("data.instances.dache_main_core_icon")
+response if ${url} ~= /^https:\/\/api\.udache\.com\/gulfstream\/porsche\/v\d\/dache_homepage_layout\?/i then response.json.jq(".data |= (.instances |= (to_entries | map(select(.key | test(\"feed_back_|dache_main_member|order_container_|dache_main_core_icon|dache_main_card_\"))) | from_entries))")
+response if ${url} ~= /^https:\/\/api\.udache\.com\/intercity\/ticket\/api\/v\d\/core\/getFullPageInfoLayout\?/i then response.json.jq(".data.disorder_components |= (map(select(.name == \"history_order_card\" or .name == \"inprogress_order_card\" or .name == \"station_calendar\" or .name == \"main_card_v2\" or .name == \"user_history_order\")))")
+request if ${url} ~= /^https:\/\/daijia\.kuaidadi\.com(:443)?\/gateway\?api=prado\.cms\.delivery\.batch/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/daijia\.kuaidadi\.com(:443)?\/gateway\?api=prado\.cms\.AggregateDeliveryRemoteService\.aggregateDelivery/i then reject_dict(200)
+response if ${url} ~= /^https:\/\/daijia\.kuaidadi\.com(:443)?\/gateway\?api=lj\.cos\.apolloConfig/i then response.json.jq(".data |= map(select(.name != \"daijia-memberInfo-config\" and .name != \"daijia-transfer-share-config\"))")
+request if ${url} ~= /^https:\/\/daijia\.kuaidadi\.com(:443)?\/gateway\?api=lj\.c\.p\.queryLevelAndRightsStatus/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/daijia\.kuaidadi\.com(:443)?\/gateway\?api=lj\.cos\.p\.popup/i then reject_dict(200)
+response if ${url} ~= /^https:\/\/daijia\.kuaidadi\.com(:443)?\/gateway\?api=lj\.cos\.apolloToggle/i then response.json.jq(".data |= map(select(.name as $n | {daijia_app_estimate_pre_req_switch:true,daijia_agent_car_picture_check:true,daijia_bluetooth_wifi_degrade_switch:true,daijia_weixin_publish_login:true,daijia_estimate_recommend_degrade_switch:true,daijia_yugu_policy_switch:true,daijia_home_location_guide_switch:true,daijia_estimate_switch:true} | has($n)))")
+response if ${url} ~= /^https:\/\/api\.udache\.com\/gulfstream\/porsche\/v\d\/bronze\/pinchengle_homepage_layout$/i then response.json.jq(".data.instances |= with_entries(select(.key | IN(\"dacheanycar-certificates-1\", \"main-card-1\", \"map-1\", \"nav-1\", \"tool-container-1\")))")
+request if ${url} ~= /^https:\/\/api\.udache\.com\/gulfstream\/porsche\/v\d\/pSFCHomePage\?/i then reject_dict(200)
+response if ${url} ~= /^https:\/\/api\.udache\.com\/gulfstream\/porsche\/v\d\/SFCHomeTab\?/i then response.json.jq(".data.tab_list |= map(select(.tab_id == \"passenger\" or .tab_id == \"driver\"))")
+request if ${url} ~= /^https:\/\/htwkop-st\.xiaojukeji\.com\/gateway\?api=cms\.htw\.delivery\.batch/i then reject_dict(200)
+response if ${url} ~= /^https:\/\/htwkop\.xiaojukeji\.com(:443)?\/gateway\?api=hm\.fa\.querySellCardSummary/i then response.json.replace("data", "{}")
+response if ${url} ~= /^https:\/\/htwkop\.xiaojukeji\.com(:443)?\/gateway\?api=hm\.fa\.queryWelfareCenter/i then response.json.replace("data", "{}")
+request if ${url} ~= /^https:\/\/freight\.xiaojukeji\.com\/gateway\?api=freight\.d\.core\.multiDisplayV\d/i then reject_dict(200)
+response if ${url} ~= /^https:\/\/poi\.map\.xiaojukeji\.com\/mapapi\/startinfo\?api_version/i then response.json.delete("rec_destination")
+response if ${url} ~= /^https:\/\/poi\.map\.xiaojukeji\.com\/mapapi\/poiinfo\?product_id/i then response.json.delete("rec_destination")
+response if ${url} ~= /^https:\/\/common\.diditaxi\.com\.cn\/user_common\/itineraryList\?/i then response.json.jq("del(.data.tab_nav[]?.tab_param)")
+
+# 百度网盘
+request if ${url} ~= /^https:\/\/pan\.baidu\.com\/api\/getconfig\?/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/pan\.baidu\.com\/api\/getsyscfg\?/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/pan\.baidu\.com\/api\/taskscore\/tasklist\?/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/pan\.baidu\.com\/act\/api\/activityentry\?/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/pan\.baidu\.com\/rest\/\d\.\d\/pcs\/adv\?/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/pan\.baidu\.com\/api\/plugin\/get\?/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/pan\.baidu\.com\/recommend\/query\/list\?/i then reject_dict(200)
+response if ${url} ~= /^https:\/\/pan\.baidu\.com\/feed\/kingkongdistrict\?/i then response.json.jq(".data.data |= map(select(.type != \"novel\" and .type != \"shortplay\" and .type != \"print\" and .type != \"job_hunt\"))")
+
+# 12306
+response if ${url} ~= /^https:\/\/ad\.12306\.cn\/ad\/ser\/getAdList$/i then response.json.delete(["materialsList", "advertParam"])
+
+# Keep
+response if ${url} ~= /^https:\/\/api\.gotokeep\.com\/op-engine-webapp\/v1\/configs$/i then response.json.delete(["data.adTimeoutReport", "data.spotShowReport", "data.adSupplementIntervalMinutes", "data.adSupplementSwitch", "data.hotFeedSpotAdRequestMoment", "data.activityBrandFeedSpotAdRequestMoment", "data.searchFeedSpotAdRequestMoment", "data.feedDetailSpotAdRequestMoment", "data.homePageFeedSpotAdRequestMoment", "data.followFeedSpotAdRequestMoment", "data.hotFeedRecommendSpotAdRequestMoment", "data.activityFeedSpotAdRequestMoment", "data.hotFeedFindSpotAdRequestMoment", "data.hotFeedSpotFixedPositionSecond", "data.searchFeedSpotFixedPositionSecond", "data.followFeedSpotFixedPositionSecond", "data.activityFeedSpotFixedPositionSecond", "data.searchFeedSpotFixedPositionThird", "data.hotFeedFindSpotFixedPositionSecond", "data.hotFeedFindSpotFixedPositionThird", "data.activityFeedSpotFixedPositionInitial", "data.activityFeedSpotFixedPositionThird", "data.hotFeedDynamicSpotPosition", "data.feedDetailDynamicSpotPosition", "data.hotFeedRecommendDynamicSpotPosition", "data.hotFeedFindDynamicSpotPosition", "data.homePageFeedDynamicSpotPosition", "data.followFeedDynamicSpotPosition", "data.searchFeedSpotPositionDynamic", "data.activityFeedSpotPositionDynamic", "data.activityBrandFeedSpotPositionDynamic", "data.splashAdLoadTimeLimit", "data.courseAdLoadTimeLimit", "data.feedAdLoadTimeLimit", "data.aliHCSpotConfig", "data.gdtSpotConfig", "data.pugcThresholdPercent", "data.pugcStepMinSeconds", "data.pugcStepMaxSeconds", "data.pugcPreLoadEarlySeconds", "data.pugcLoadPostPreRolls", "data.closeConfirmButtonText"])
+request if ${url} ~= /^https:\/\/api\.gotokeep\.com\/op-engine-webapp\/v1\/ad\//i then reject_dict(200)
+request if ${url} ~= /^https:\/\/api\.gotokeep\.com\/search\/v6\/default\/keyword\/list\?/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/api\.gotokeep\.com\/twins\/v4\/feed\/followPage\?/i then reject_dict(200)
+response if ${url} ~= /^https:\/\/api\.gotokeep\.com\/twins\/union\/feed\/union_feed_all$/i then response.json.jq(".data.modules |= map(select(.code == \"unionFeedEntry\"))")
+request if ${url} ~= /^https:\/\/api\.gotokeep\.com\/twins\/union\/feed\/function\?/i then reject_dict(200)
+response if ${url} ~= /^https:\/\/api\.gotokeep\.com\/twins\/v4\/feed\/entryDetail\?/i then response.json.replace("data", "{}")
+request if ${url} ~= /^https:\/\/api\.gotokeep\.com\/guide-webapp\/v1\/popup\/getPopUp\?/i then reject_dict(200)
+response if ${url} ~= /^https:\/\/api\.gotokeep\.com\/config\/v3\/basic\?/i then response.json.jq(".data.bottomBarControl.tabs |= map(select(.tabType | . == \"home\" or . == \"schedule\" or . == \"dynamic_sports\" or . == \"personal\")) | .data.homeTabs |= map(select(.type | . == \"socialTab\" or . == \"union_feed_all\" or . == \"homeRecommend\" or . == \"suitTab\" or . == \"union_feed_route\"))")
+request if ${url} ~= /^https:\/\/api\.gotokeep\.com\/search\/v5\/hotCourse\/list$/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/api\.gotokeep\.com\/search\/v4\/hotHashtag\/list$/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/api\.gotokeep\.com\/search\/v4\/hotword\/list\?/i then reject_dict(200)
+response if ${url} ~= /^https:\/\/api\.gotokeep\.com\/pencil-webapp\/play\/v1\/games\?/i then response.json.jq(".data.games[].microGames[] |= if .leftIcon? and .leftIcon.type == \"aiMode\" then del(.leftIcon) else . end")
+
+# Soul
+request if ${url} ~= /^https:\/\/ssp\.soulapp\.cn\/api\/q/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/chat-live\.soulapp\.cn\/live\/planet\/recListV2/i then reject(200)
+response if ${url} ~= /^https:\/\/(?:api-\w+|gateway-mobile-gray|post)\.soulapp\.cn\/(?:furion\/position\/content|hot\/soul\/rank|mobile\/app\/version\/queryIos|official\/scene\/module|teenager\/config|v2\/post\/gift\/list|v\d\/post\/homepage\/guide\/card)/i then response.json.delete("data")
+
+# 大麦
+request if ${url} ~= /^https:\/\/acs\.m\.taobao\.com\/gw\/mtop\.damai\.wireless\.home\.welcome\//i then reject_dict(200)
+request if ${url} ~= /^https:\/\/acs\.m\.taobao\.com\/gw\/mtop\.damai\.mec\.popup\.get\//i then reject_dict(200)
+response if ${url} ~= /^https:\/\/acs\.m\.taobao\.com\/gw\/mtop\.damai\.wireless\.user\.my\.content\.get\//i then response.json.delete(["data.banner", "data.performFilmVip.userProfitList"])
+response if ${url} ~= /^https:\/\/acs\.m\.taobao\.com\/gw\/mtop\.damai\.wireless\.mypage\.feed\//i then response.json.delete("data.feedCard")
+response if ${url} ~= /^https:\/\/acs\.m\.taobao\.com\/gw\/mtop\.damai\.mec\.aristotle\.get\//i then response.json.delete("data.data.top.keywords")
+
+# 淘宝
+request if ${url} ~= /^https:\/\/acs\.m\.taobao\.com\/gw\/mtop\.fliggy\.crm\.screen\.(allresource|predict)/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/acs\.m\.taobao\.com\/gw\/mtop\.alibaba\.advertisementservice\.getadv/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/acs\.m\.taobao\.com\/gw\/mtop\.alimama\.etao\.config\.query\/.+?etao_advertise/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/acs\.m\.taobao\.com\/gw\/mtop\.alimusic\.common\.mobileservice\.startinit/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/acs\.m\.taobao\.com\/gw\/mtop\.etao\.noah\.query\/.+tao_splash/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/acs\.m\.taobao\.com\/gw\/mtop\.film\.mtopadvertiseapi\.queryadvertise/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/acs\.m\.taobao\.com\/gw\/mtop\.o2o\.ad\.gateway\.get/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/acs\.m\.taobao\.com\/gw\/mtop\.taobao\.idle\.home\.welcome/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/acs\.m\.taobao\.com\/gw\/mtop\.trip\.activity\.querytmsresources/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/(?:gw|heic)\.alicdn\.com\/imgextra\/i\d\/\d*\/?[\w!]+-\d-(?:octopus|tps)-(?:1080|1125)-\d{4}\.(?:jpg|png)_(?:1\d{3}|9\d{2})x(?:\d|1\d{3}|9\d{2})q[59]0/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/guide-acs\.m\.taobao\.com\/gw\/mtop\.taobao\.(volvo\.secondfloor\.getconfig|wireless\.home\.newface\.awesome\.get)/i then reject_dict(200)
+
+[Script]
+# 虎扑
+response if ${url} ~= /^https:\/\/fairy\.mobileapi\.hupu\.com\/mang\/preview\/banners/i then script("https://kelee.one/Resource/JavaScript/HUPU/HUPU_remove_ads.js") with tag="移除虎扑广告", requires_body=true
+response if ${url} ~= /^https:\/\/bbs\.mobileapi\.hupu\.com\/\d\/\d\.\d\.\d+\/bbsallapi\/lego\/data/i then script("https://kelee.one/Resource/JavaScript/HUPU/HUPU_remove_ads.js") with tag="移除虎扑广告", requires_body=true
+response if ${url} ~= /^https:\/\/games\.mobileapi\.hupu\.com\/\d\/\d\.\d\.\d+\/buffer\/hotList/i then script("https://kelee.one/Resource/JavaScript/HUPU/HUPU_remove_ads.js") with tag="移除虎扑广告", requires_body=true
+response if ${url} ~= /^https:\/\/games\.mobileapi\.hupu\.com\/\d\/\d\.\d\.\d+\/bplapi\/user\/v1\/more/i then script("https://kelee.one/Resource/JavaScript/HUPU/HUPU_remove_ads.js") with tag="移除虎扑广告", requires_body=true
+
+# 航旅纵横
+response if ${url} ~= /^http?:\/\/(114\.115\.217\.129)|(home\.umetrip\.com)\/gateway\/api\/umetrip\/native$/i then script("https://kelee.one/Resource/JavaScript/Umetrip/Umetrip_remove_ads.js") with tag="移除首页广告"
+
+# 小红书
+response if ${url} ~= /^https:\/\/edith\.xiaohongshu\.com\/api\/sns\/v1\/note\/(?:imagefeed|live_photo\/save)/i then script("https://kelee.one/Resource/JavaScript/RedPaper/RedPaper_remove_ads.js") with tag="移除图片和实况照片水印", requires_body=true
+response if ${url} ~= /^https:\/\/edith\.xiaohongshu\.com\/api\/sns\/v1\/system\/service\/ui\/config\?/i then script("https://kelee.one/Resource/JavaScript/RedPaper/RedPaper_remove_ads.js") with tag="移除整体配置 ui", requires_body=true
+response if ${url} ~= /^https:\/\/edith\.xiaohongshu\.com\/api\/sns\/v1\/system_service\/config\?/i then script("https://kelee.one/Resource/JavaScript/RedPaper/RedPaper_remove_ads.js") with tag="移除开屏广告 config", requires_body=true
+response if ${url} ~= /^https:\/\/edith\.xiaohongshu\.com\/api\/sns\/v2\/system_service\/splash_config/i then script("https://kelee.one/Resource/JavaScript/RedPaper/RedPaper_remove_ads.js") with tag="移除开屏广告 splash_config", requires_body=true
+response if ${url} ~= /^https:\/\/edith\.xiaohongshu\.com\/api\/sns\/v2\/(?:note\/widgets|user\/followings\/followfeed)/i then script("https://kelee.one/Resource/JavaScript/RedPaper/RedPaper_remove_ads.js") with tag="移除详情页小部件、关注页感兴趣的人", requires_body=true
+response if ${url} ~= /^https:\/\/edith\.xiaohongshu\.com\/api\/sns\/v4\/followfeed\?/i then script("https://kelee.one/Resource/JavaScript/RedPaper/RedPaper_remove_ads.js") with tag="移除信息流广告", requires_body=true
+response if ${url} ~= /^https:\/\/edith\.xiaohongshu\.com\/api\/sns\/v5\/recommend\/user\/follow_recommend\?/i then script("https://kelee.one/Resource/JavaScript/RedPaper/RedPaper_remove_ads.js") with tag="移除详情页感兴趣的人", requires_body=true
+response if ${url} ~= /^https:\/\/edith\.xiaohongshu\.com\/api\/sns\/(?:v1\/interaction\/comment\/video\/download|v5\/note\/comment\/list)/i then script("https://kelee.one/Resource/JavaScript/RedPaper/RedPaper_remove_ads.js") with tag="移除评论区实况照片水印", requires_body=true
+response if ${url} ~= /^https:\/\/edith\.xiaohongshu\.com\/api\/sns\/(?:v2\/note\/feed|v3\/note\/videofeed)/i then script("https://kelee.one/Resource/JavaScript/RedPaper/RedPaper_remove_ads.js") with tag="移除图片和视频水印", requires_body=true
+response if ${url} ~= /^https:\/\/(?:edith|rec)\.xiaohongshu\.com\/api\/sns\/v6\/homefeed\?/i then script("https://kelee.one/Resource/JavaScript/RedPaper/RedPaper_remove_ads.js") with tag="移除信息流广告", requires_body=true
+response if ${url} ~= /^https:\/\/(?:edith|so)\.xiaohongshu\.com\/api\/sns\/v10\/search\/notes\?/i then script("https://kelee.one/Resource/JavaScript/RedPaper/RedPaper_remove_ads.js") with tag="移除搜索页广告", requires_body=true
+response if ${url} ~= /^https:\/\/(?:edith|rec|www)\.xiaohongshu\.com\/api\/sns\/(?:v4\/note\/videofeed|v10\/note\/video\/save)/i then script("https://kelee.one/Resource/JavaScript/RedPaper/RedPaper_remove_ads.js") with tag="移除视频水印", requires_body=true
+
+# 微博
+response if ${url} ~= /^https:\/\/api\.weibo\.cn\/2\/(?:checkin\/show|client\/publisher_list|push\/active)/i then script("https://kelee.one/Resource/JavaScript/Weibo/Weibo_remove_ads.js") with tag="移除首页推广", requires_body=true
+response if ${url} ~= /^https:\/\/api\.weibo\.cn\/2\/groups\/allgroups\/v2\?/i then script("https://kelee.one/Resource/JavaScript/Weibo/Weibo_remove_ads.js") with tag="移除首页顶部标签", requires_body=true
+response if ${url} ~= /^https:\/\/api\.weibo\.cn\/2\/(?:cardlist|page)/i then script("https://kelee.one/Resource/JavaScript/Weibo/Weibo_remove_ads.js") with tag="移除信息流广告", requires_body=true
+response if ${url} ~= /^https:\/\/api\.weibo\.cn\/2\/comments\/build_comments\?/i then script("https://kelee.one/Resource/JavaScript/Weibo/Weibo_remove_ads.js") with tag="移除评论区广告", requires_body=true
+response if ${url} ~= /^https:\/\/api\.weibo\.cn\/2\/(?:container\/asyn|flowlist|flowpage)/i then script("https://kelee.one/Resource/JavaScript/Weibo/Weibo_remove_ads.js") with tag="移除个人微博详情页广告", requires_body=true
+response if ${url} ~= /^https:\/\/api\.weibo\.cn\/2\/friendships\/(?:create|destroy)/i then script("https://kelee.one/Resource/JavaScript/Weibo/Weibo_remove_ads.js") with tag="移除关注、取消关注弹窗", requires_body=true
+response if ${url} ~= /^https:\/\/api\.weibo\.cn\/2\/profile\/(?:container_timeline|dealatt|me|statuses\/tab|userinfo)/i then script("https://kelee.one/Resource/JavaScript/Weibo/Weibo_remove_ads.js") with tag="移除个人主页广告", requires_body=true
+response if ${url} ~= /^https:\/\/api\.weibo\.cn\/2\/shproxy\/chaohua\/discovery\/searchactive\?/i then script("https://kelee.one/Resource/JavaScript/Weibo/Weibo_remove_ads.js") with tag="移除超话搜索页广告", requires_body=true
+response if ${url} ~= /^https:\/\/api\.weibo\.cn\/2\/statuses\/(?:comments_expand_child|container_detail_comment)/i then script("https://kelee.one/Resource/JavaScript/Weibo/Weibo_remove_ads.js") with tag="移除评论区广告", requires_body=true
+response if ${url} ~= /^https:\/\/api\.weibo\.cn\/2\/statuses\/(?:container_detail\?|container_timeline(?:_hot|_topic|_topicpage|_unread)?|repost_timeline|unread_hot_timeline)/i then script("https://kelee.one/Resource/JavaScript/Weibo/Weibo_remove_ads.js") with tag="移除信息流广告", requires_body=true
+response if ${url} ~= /^https:\/\/api\.weibo\.cn\/2\/statuses\/(?:extend|show)\?/i then script("https://kelee.one/Resource/JavaScript/Weibo/Weibo_remove_ads.js") with tag="移除微博详情页广告", requires_body=true
+response if ${url} ~= /^https:\/\/api\.weibo\.cn\/2\/video\/(?:full_screen_stream|tiny_stream_mid_detail|tiny_stream_video_list)\?/i then script("https://kelee.one/Resource/JavaScript/Weibo/Weibo_remove_ads.js") with tag="移除视频流广告", requires_body=true
+response if ${url} ~= /^https:\/\/api\.weibo\.cn\/2\/!\/huati\/discovery_home_bottom_channels\?/i then script("https://kelee.one/Resource/JavaScript/Weibo/Weibo_remove_ads.js") with tag="移除超话顶部标签", requires_body=true
+response if ${url} ~= /^https:\/\/api\.weibo\.cn\/2\/direct_messages\/user_list\?/i then script("https://kelee.one/Resource/JavaScript/Weibo/Weibo_remove_ads.js") with tag="移除消息页列表广告", requires_body=true
+response if ${url} ~= /^https:\/\/api\.weibo\.cn\/2\/messageflow\/notice\?/i then script("https://kelee.one/Resource/JavaScript/Weibo/Weibo_remove_ads.js") with tag="移除消息页提醒", requires_body=true
+response if ${url} ~= /^https:\/\/api\.weibo\.cn\/2\/search\/(?:container_timeline|finder)\?/i then script("https://kelee.one/Resource/JavaScript/Weibo/Weibo_remove_ads.js") with tag="移除热门微博信息流广告", requires_body=true
+response if ${url} ~= /^https:\/\/api\.weibo\.cn\/2\/searchall\?/i then script("https://kelee.one/Resource/JavaScript/Weibo/Weibo_remove_ads.js") with tag="移除发现页搜索结果广告", requires_body=true
+response if ${url} ~= /^https:\/\/bootpreload\.uve\.weibo\.com\/v[12]\/ad\/preload/i then script("https://kelee.one/Resource/JavaScript/Weibo/Weibo_remove_ads.js") with tag="移除开屏广告 preload", requires_body=true
+response if ${url} ~= /^https:\/\/sdkapp\.uve\.weibo\.com\/interface\/sdk\/sdkad\.php/i then script("https://kelee.one/Resource/JavaScript/Weibo/Weibo_remove_ads.js") with tag="移除开屏广告 sdkad", requires_body=true
+response if ${url} ~= /^https:\/\/wbapp\.uve\.weibo\.com\/(?:preload\/get_ad|wbapplua\/wbpullad\.lua)/i then script("https://kelee.one/Resource/JavaScript/Weibo/Weibo_remove_ads.js") with tag="移除开屏广告 wbapplua", requires_body=true
+
+# 拼多多
+response if ${url} ~= /^https:\/\/m\.pinduoduo\.net\/mdkd\/package\?from_app_scan/i then script("https://kelee.one/Resource/JavaScript/PinDuoDuo/PinDuoDuo_remove_ads.js") with tag="移除扫码取件页面商品推荐及弹窗", requires_body=true
+
+# 京东
+response if ${url} ~= /^https:\/\/api\.m\.jd\.com\/client\.action\?functionId=(deliverLayer|getTabHomeInfo|myOrderInfo|orderTrackBusiness|personinfoBusiness|start|welcomeHome)/i then script("https://kelee.one/Resource/JavaScript/JD/JD_remove_ads.js") with tag="移除京东广告", requires_body=true
+
+# 12306
+request if ${url} ~= /^https:\/\/mobile\.12306\.cn\/otsmobile\/app\/mgs\/mgw\.htm$/i then script("https://kelee.one/Resource/JavaScript/12306/12306_remove_ads.js") with tag="移除12306应用内广告"
+
+# Soul
+response if ${url} ~= /^https:\/\/(?:api-\w+|chat-live|post)\.soulapp\.cn\/(?:chat\/limitInfo|chatroom\/chatClassifyRoomList|homepage\/diamond\/position\/info|v2\/post\/recSquare\/subTabs|v6\/planet\/config)/i then script("https://kelee.one/Resource/JavaScript/Soul/Soul_remove_ads.js") with tag="移除Soul广告", requires_body=true
+
+# 淘宝
+response if ${url} ~= /^https:\/\/guide-acs\.m\.taobao\.com\/gw\/mtop\.taobao\.(cloudvideo\.video\.query|wireless\.home\.splash\.awesome\.get)/i then script("https://kelee.one/Resource/JavaScript/Taobao/Taobao_remove_ads.js") with tag="移除淘宝开屏广告", requires_body=true
+response if ${url} ~= /^https:\/\/poplayer\.template\.alibaba\.com\/\w+\.json/i then script("https://kelee.one/Resource/JavaScript/Taobao/Taobao_remove_ads.js") with tag="移除淘宝开屏广告", requires_body=true
+
+[MitM]
+hostname=gql.reddit.com, gql-fed.reddit.com, games.mobileapi.hupu.com, fairy.mobileapi.hupu.com, bbs.mobileapi.hupu.com, goblin.hupu.com, 114.115.217.129, home.umetrip.com, m-cloud.zhihu.com, api.zhihu.com, www.zhihu.com, page-info.zhihu.com, zhida.zhihu.com, app.dewu.com, acs.m.goofish.com, g-acs.m.goofish.com, -i.vip.iqiyi.com, *.iqiyi.com, ci.xiaohongshu.com, edith.xiaohongshu.com, rec.xiaohongshu.com, so.xiaohongshu.com, www.xiaohongshu.com, api.coolapk.com, mp.weixin.qq.com, *.weibo.cn, *.weibo.com, weibo.com, appconf.mail.163.com, dashi.163.com, api.pinduoduo.com, m.pinduoduo.net, open-cms-api.quark.cn, stars.shuqireader.com, api.m.jd.com, m5.amap.com, ai.amap.com, m5-zb.amap.com, center.amap.com, sns.amap.com, info.amap.com, as.xiaojukeji.com, conf.diditaxi.com.cn, common.diditaxi.com.cn, res.xiaojukeji.com, api.udache.com, daijia.kuaidadi.com, htwkop-st.xiaojukeji.com, htwkop.xiaojukeji.com, freight.xiaojukeji.com, poi.map.xiaojukeji.com, pan.baidu.com, ad.12306.cn, mobile.12306.cn, api.gotokeep.com, api*.soulapp.cn, gateway-mobile-gray.soulapp.cn, post.soulapp.cn, ssp.soulapp.cn,acs.m.taobao.com, heic.alicdn.com, guide-acs.m.taobao.com, poplayer.template.alibaba.com
