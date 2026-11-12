@@ -3,7 +3,7 @@
 
 [Rule]
 # 航旅纵横
-URL-REGEX,"^http?:\/\/(discardrp|startup)\.umetrip\.com\/gateway\/api\/umetrip\/native",REJECT
+URL-REGEX,"^https?:\/\/(discardrp|startup)\.umetrip\.com\/gateway\/api\/umetrip\/native",REJECT
 
 # 爱奇艺
 IP-CIDR,103.44.59.54/32,REJECT,no-resolve
@@ -70,13 +70,13 @@ DOMAIN,tmeadbak.y.qq.com,REJECT
 DOMAIN,tmeadquic.y.qq.com,REJECT
 
 # Soul
-DOMAIN-SUFFIX,soulapp.cn,DIRECT
-IP-CIDR,8.210.3.170/32,DIRECT,no-resolve
-IP-CIDR,47.75.72.47/32,DIRECT,no-resolve
 DOMAIN,ad-h5-cdn.soulapp.cn,REJECT
 DOMAIN,ad-h5-station-cdn.soulapp.cn,REJECT
 DOMAIN,ad-r.soulapp.cn,REJECT
 DOMAIN,soul-ad.soulapp.cn,REJECT
+DOMAIN-SUFFIX,soulapp.cn,DIRECT
+IP-CIDR,8.210.3.170/32,DIRECT,no-resolve
+IP-CIDR,47.75.72.47/32,DIRECT,no-resolve
 IP-CIDR,47.56.131.76/32,REJECT,no-resolve
 IP-CIDR,47.97.215.55/32,REJECT,no-resolve
 IP-CIDR,47.99.42.29/32,REJECT,no-resolve
@@ -439,7 +439,7 @@ http-response-jq (?i)^https:\/\/acs\.m\.taobao\.com\/gw\/mtop\.damai\.mec\.arist
 虎扑_移除虎扑广告_4 = type=http-response, pattern=(?i)^https:\/\/games\.mobileapi\.hupu\.com\/\d\/\d\.\d\.\d+\/bplapi\/user\/v1\/more, script-path=https://kelee.one/Resource/JavaScript/HUPU/HUPU_remove_ads.js, requires-body=true, max-size=-1, timeout=20
 
 # 航旅纵横
-航旅纵横_移除首页广告 = type=http-response, pattern=(?i)^http?:\/\/(114\.115\.217\.129)|(home\.umetrip\.com)\/gateway\/api\/umetrip\/native$, script-path=https://kelee.one/Resource/JavaScript/Umetrip/Umetrip_remove_ads.js, timeout=20
+航旅纵横_移除首页广告 = type=http-response, pattern=(?i)^https?:\/\/(114\.115\.217\.129|home\.umetrip\.com)\/gateway\/api\/umetrip\/native$, script-path=https://kelee.one/Resource/JavaScript/Umetrip/Umetrip_remove_ads.js, timeout=20
 
 # 小红书
 小红书_移除图片和实况照片水印 = type=http-response, pattern=(?i)^https:\/\/edith\.xiaohongshu\.com\/api\/sns\/v1\/note\/(?:imagefeed|live_photo\/save), script-path=https://kelee.one/Resource/JavaScript/RedPaper/RedPaper_remove_ads.js, requires-body=true, max-size=-1, timeout=20
@@ -494,4 +494,4 @@ Soul_移除Soul广告 = type=http-response, pattern=(?i)^https:\/\/(?:api-\w+|ch
 淘宝_移除淘宝开屏广告_2 = type=http-response, pattern=(?i)^https:\/\/poplayer\.template\.alibaba\.com\/\w+\.json, script-path=https://kelee.one/Resource/JavaScript/Taobao/Taobao_remove_ads.js, requires-body=true, max-size=-1, timeout=20
 
 [MITM]
-hostname = %APPEND% gql.reddit.com, gql-fed.reddit.com, games.mobileapi.hupu.com, fairy.mobileapi.hupu.com, bbs.mobileapi.hupu.com, goblin.hupu.com, 114.115.217.129, home.umetrip.com, m-cloud.zhihu.com, api.zhihu.com, www.zhihu.com, page-info.zhihu.com, zhida.zhihu.com, app.dewu.com, acs.m.goofish.com, g-acs.m.goofish.com, -i.vip.iqiyi.com, *.iqiyi.com, ci.xiaohongshu.com, edith.xiaohongshu.com, rec.xiaohongshu.com, so.xiaohongshu.com, www.xiaohongshu.com, api.coolapk.com, mp.weixin.qq.com, *.weibo.cn, *.weibo.com, weibo.com, appconf.mail.163.com, dashi.163.com, api.pinduoduo.com, m.pinduoduo.net, open-cms-api.quark.cn, stars.shuqireader.com, api.m.jd.com, m5.amap.com, ai.amap.com, m5-zb.amap.com, center.amap.com, sns.amap.com, info.amap.com, as.xiaojukeji.com, conf.diditaxi.com.cn, common.diditaxi.com.cn, res.xiaojukeji.com, api.udache.com, daijia.kuaidadi.com, htwkop-st.xiaojukeji.com, htwkop.xiaojukeji.com, freight.xiaojukeji.com, poi.map.xiaojukeji.com, pan.baidu.com, ad.12306.cn, mobile.12306.cn, api.gotokeep.com, api*.soulapp.cn, gateway-mobile-gray.soulapp.cn, post.soulapp.cn, ssp.soulapp.cn, acs.m.taobao.com, heic.alicdn.com, guide-acs.m.taobao.com, poplayer.template.alibaba.com
+hostname = %APPEND% gql.reddit.com, gql-fed.reddit.com, games.mobileapi.hupu.com, fairy.mobileapi.hupu.com, bbs.mobileapi.hupu.com, goblin.hupu.com, 114.115.217.129, home.umetrip.com, m-cloud.zhihu.com, api.zhihu.com, www.zhihu.com, page-info.zhihu.com, zhida.zhihu.com, app.dewu.com, acs.m.goofish.com, g-acs.m.goofish.com, -i.vip.iqiyi.com, *.iqiyi.com, ci.xiaohongshu.com, edith.xiaohongshu.com, rec.xiaohongshu.com, so.xiaohongshu.com, www.xiaohongshu.com, api.coolapk.com, mp.weixin.qq.com, *.weibo.cn, *.weibo.com, weibo.com, appconf.mail.163.com, dashi.163.com, api.pinduoduo.com, m.pinduoduo.net, open-cms-api.quark.cn, stars.shuqireader.com, api.m.jd.com, m5.amap.com, ai.amap.com, m5-zb.amap.com, center.amap.com, sns.amap.com, info.amap.com, as.xiaojukeji.com, conf.diditaxi.com.cn, common.diditaxi.com.cn, res.xiaojukeji.com, api.udache.com, daijia.kuaidadi.com, htwkop-st.xiaojukeji.com, htwkop.xiaojukeji.com, freight.xiaojukeji.com, poi.map.xiaojukeji.com, pan.baidu.com, ad.12306.cn, mobile.12306.cn, api.gotokeep.com, api*.soulapp.cn, gateway-mobile-gray.soulapp.cn, post.soulapp.cn, ssp.soulapp.cn, acs.m.taobao.com, heic.alicdn.com, guide-acs.m.taobao.com, poplayer.template.alibaba.com, chat-live.soulapp.cn
