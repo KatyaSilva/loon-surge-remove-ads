@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
+  <title>节点 IP 质量检测</title>
+  <style>
+    :root{color-scheme:light dark;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f2f2f7;color:#1c1c1e;--surface:#fff;--muted:#6e6e73;--line:#e5e5ea;--accent:#0874dc}
+    *{box-sizing:border-box}body{margin:0;padding:max(22px,env(safe-area-inset-top)) 16px max(36px,env(safe-area-inset-bottom));-webkit-font-smoothing:antialiased}
+    button,input,select{font:inherit}button,select{min-height:44px}button{cursor:pointer}button:disabled{cursor:default;opacity:.55}
+    :focus-visible{outline:3px solid var(--accent);outline-offset:3px}.shell{max-width:760px;margin:auto}.top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin:2px 2px 22px}h1{font-size:24px;letter-spacing:-.5px;margin:0 0 7px}h2{font-size:16px;margin:24px 2px 10px}
+    .muted,.note{color:var(--muted);font-size:12px;line-height:1.6}.badge{border-radius:999px;padding:6px 10px;color:#0874dc;background:#e4f1ff;font-size:12px;white-space:nowrap}.panel{background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden;margin-bottom:14px}
+    .policy{padding:16px}.policy label{display:block;font-size:14px;font-weight:600;margin-bottom:10px}.policy-controls{display:flex;gap:10px}.policy select{flex:1;min-width:0;border:1px solid var(--line);border-radius:10px;padding:8px;background:var(--surface);color:inherit}.secondary{background:var(--line);color:inherit;border:0;border-radius:10px;padding:0 14px}.note{margin:10px 0 0}.note:empty{display:none}
+    .presets{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 18px}.presets button{border:1px solid var(--line);border-radius:999px;background:var(--surface);color:inherit;padding:8px 15px;font-size:13px}.presets button[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:white}
+    .section-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.section-head h2{margin-top:14px}.option{display:flex;justify-content:space-between;align-items:center;min-height:56px;gap:16px;padding:12px 16px;border-bottom:1px solid var(--line);font-size:14px}.option:last-child{border-bottom:0}.option small{display:block;font-size:11px;font-weight:400;color:var(--muted);margin-top:4px}
+    .switch{position:relative;flex:none;width:46px;height:28px}.switch input{position:absolute;inset:0;margin:0;width:100%;height:100%;opacity:0;z-index:1;cursor:pointer}.track{position:absolute;inset:0;border-radius:999px;background:#c7c7cc;pointer-events:none}.track:after{content:"";position:absolute;top:2px;left:2px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 1px 3px #0003;transition:transform .15s}.switch input:checked+.track{background:#30b95a}.switch input:checked+.track:after{transform:translateX(18px)}.switch input:focus-visible+.track{outline:3px solid var(--accent);outline-offset:3px}
+    fieldset{border:0;padding:0;margin:0;min-inline-size:0}fieldset:disabled .option{opacity:.6}.actions{display:grid;grid-template-columns:1fr auto;gap:10px;margin-top:16px}.actions button{border:0;border-radius:13px;padding:10px 18px;font-weight:600}.run{background:#0874dc;color:#fff}.progress{margin:12px 2px;min-height:20px}.target{overflow-wrap:anywhere;margin:0 2px 10px;font-size:12px;color:var(--muted)}
+    .result{border-bottom:1px solid var(--line)}.result:last-child{border-bottom:0}.result summary{display:flex;align-items:center;gap:10px;min-height:58px;padding:14px 16px;cursor:pointer;list-style:none}.result summary::-webkit-details-marker{display:none}.result summary:after{content:"›";font-size:22px;transform:rotate(0deg);color:var(--muted)}.result[open] summary:after{transform:rotate(90deg)}.result .name{font-size:14px;font-weight:600;flex:1}.status{font-size:12px;color:var(--muted)}.dot{width:8px;height:8px;border-radius:50%;background:#aaa}.result[data-state=running] .dot{background:#f29523}.result[data-state=success] .dot{background:#2ba954}.result[data-state=error] .dot{background:#dc4545}.content{padding:0 12px 12px;border-top:1px solid var(--line)}.frame{width:100%;min-height:140px;border:0;display:block;background:var(--surface)}.empty,.error{padding:20px 16px;font-size:13px;line-height:1.6;text-align:center;margin:0}.error{color:#c23b35}.footer{margin:22px 2px 0;font-size:11px;color:var(--muted);line-height:1.8}
+    @media(prefers-color-scheme:dark){:root{background:#000;color:#f2f2f7;--surface:#1c1c1e;--muted:#a1a1a6;--line:#303034;--accent:#0a84ff}.badge{background:#102b45;color:#64b5ff}.track{background:#48484a}.error{color:#ff817a}}
+    @media(prefers-reduced-motion:reduce){.track:after{transition:none}}@media(max-width:420px){body{padding-left:12px;padding-right:12px}.top{gap:10px}h1{font-size:21px}.policy-controls{flex-wrap:wrap}.policy select{flex-basis:100%}.policy-controls button{width:100%}}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="top"><div><h1>节点 IP 质量检测</h1><div class="muted">选择目标节点，按需检测并汇总报告</div></div><span class="badge">Surge</span></header>
+    <section class="panel policy" aria-label="检测节点">
+      <label for="policy">目标节点或策略组</label>
+      <div class="policy-controls"><select id="policy" disabled><option value="">正在读取节点…</option></select><button type="button" id="refresh" class="secondary">刷新列表</button></div>
+      <p id="policy-note" class="note" role="status"></p>
+    </section>
+    <div class="presets" role="group" aria-label="快捷选择">
+      <button type="button" data-preset="basic" aria-pressed="false">基础信息</button>
+      <button type="button" data-preset="risk" aria-pressed="false">风险检测</button>
+      <button type="button" data-preset="media" aria-pressed="false">流媒体与 AI</button>
+      <button type="button" data-preset="default" aria-pressed="false">常用组合</button>
+    </div>
+    <section class="panel"><label class="option" for="mask"><span>隐藏 IP<small>对报告中的 IP 进行遮盖，方便截图分享</small></span><span class="switch"><input type="checkbox" id="mask"><span class="track"></span></span></label></section>
+    <section aria-labelledby="options-heading">
+      <div class="section-head"><h2 id="options-heading">选择检测项目</h2><span class="muted" id="count"></span></div>
+      <fieldset id="options" class="panel" aria-labelledby="options-heading"></fieldset>
+    </section>
+    <div class="actions"><button type="button" id="run" class="run" disabled>开始检测</button><button type="button" id="clear" class="secondary">清空报告</button></div>
+    <p id="progress" class="muted progress" role="status" aria-live="polite">读取节点列表后，选择需要的检测项目。</p>
+    <section aria-labelledby="results-heading">
+      <h2 id="results-heading">检测报告</h2>
+      <p id="target" class="target"></p>
+      <div id="results" class="panel"><p class="empty muted">选择节点并开始检测后，结果会显示在这里。</p></div>
+    </section>
+    <p class="footer">请保持 Surge 运行。出口探测、媒体检测和测速使用所选节点；部分数据库与外部探针服务直连查询。不会修改全局策略。<br>HTTPS 测速是轻量估算；三网延迟与 MTR 来自外部探针，不等同于手机到节点的延迟或节点真实回程。</p>
+  </main>
+  <script>
+  (function () {
+    'use strict';
+    const modules = [
+      ['basic', '基础信息'], ['types', 'IP 类型属性'], ['scores', '风险评分'],
+      ['factors', '风险因素'], ['egress', '出口分流'], ['bgp', 'BGP 信息'],
+      ['bgppath', 'BGP 路径'], ['speed', '节点 HTTPS 轻量测速'],
+      ['inbound', '外部探针入站路径'], ['ping', '三网探针延迟'],
+      ['mtr', '外部探针 MTR'], ['stability', 'HTTPS 稳定性'],
+      ['media', '流媒体与 AI'], ['regions', '地区一致性'], ['status', '数据状态'],
+    ];
+    const presets = { basic: ['basic'], risk: ['types', 'scores', 'factors'], media: ['media', 'regions'], default: ['basic', 'types', 'scores', 'media'] };
+    const key = 'paperclip.ipquality.surge.';
+    const el = (id) => document.getElementById(id);
+    const options = el('options'), results = el('results'), policy = el('policy');
+    const runButton = el('run'), clearButton = el('clear'), refreshButton = el('refresh'), mask = el('mask');
+    const progress = el('progress'), note = el('policy-note');
+    const checks = new Map(), blobURLs = [], observers = [];
+    let busy = false, policiesReady = false;
+
+    function stored(name, fallback) { try { return JSON.parse(localStorage.getItem(key + name)) ?? fallback; } catch (_) { return fallback; } }
+    function save(name, value) { try { localStorage.setItem(key + name, JSON.stringify(value)); } catch (_) {} }
+    function node(tag, text, className) {
+      const item = document.createElement(tag);
+      if (text !== undefined) item.textContent = text;
+      if (className) item.className = className;
+      return item;
+    }
+    let saved = stored('modules', presets.default);
+    if (!Array.isArray(saved)) saved = presets.default;
+    const queryPreset = new URLSearchParams(location.search).get('preset');
+    if (Object.prototype.hasOwnProperty.call(presets, queryPreset)) saved = presets[queryPreset];
+    for (const [id, title] of modules) {
+      const label = node('label', undefined, 'option');
+      label.htmlFor = 'check-' + id;
+      const wrap = node('span', undefined, 'switch');
+      const input = node('input');
+      input.type = 'checkbox'; input.id = 'check-' + id; input.checked = saved.includes(id);
+      input.addEventListener('change', () => { saveSelection(); update(); });
+      checks.set(id, input);
+      wrap.append(input, node('span', undefined, 'track'));
+      label.append(node('span', title), wrap); options.append(label);
+    }
+    mask.checked = stored('mask', false) === true;
+    mask.addEventListener('change', () => save('mask', mask.checked));
+    policy.addEventListener('change', () => { save('policy', policy.value); update(); });
+    for (const button of document.querySelectorAll('[data-preset]')) {
+      button.addEventListener('click', () => {
+        if (busy) return;
+        for (const [id, input] of checks) input.checked = presets[button.dataset.preset].includes(id);
+        saveSelection(); update();
+      });
+    }
+    function selected() { return modules.filter(([id]) => checks.get(id).checked); }
+    function saveSelection() { save('modules', selected().map(([id]) => id)); }
+    function update() {
+      const selection = selected().map(([id]) => id);
+      el('count').textContent = selection.length + ' 项已选择';
+      runButton.disabled = busy || !policiesReady || !policy.value || !selection.length;
+      for (const button of document.querySelectorAll('[data-preset]')) {
+        const values = presets[button.dataset.preset];
+        button.setAttribute('aria-pressed', String(values.length === selection.length && values.every((id) => selection.includes(id))));
+        button.disabled = busy;
+      }
+    }
+    function toggle(value) {
+      busy = value; options.disabled = value; mask.disabled = value;
+      policy.disabled = value || !policiesReady; clearButton.disabled = value; refreshButton.disabled = value;
+      runButton.textContent = value ? '正在检测…' : '开始检测'; update();
+    }
+    async function api(path, body) {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), path === 'check' ? 70000 : 10000);
+      const headers = { Accept: 'application/json', 'X-IPQuality-Client': '1' };
+      if (body !== undefined) headers['Content-Type'] = 'application/json';
+      try {
+        const response = await fetch('/ipquality/api/' + path, {
+          method: body === undefined ? 'GET' : 'POST', headers,
+          body: body === undefined ? undefined : JSON.stringify(body),
+          cache: 'no-store', credentials: 'omit', signal: controller.signal,
+        });
+        let data;
+        try { data = await response.json(); } catch (_) { throw new Error('检测接口未返回有效数据，请确认模块和脚本已启用。'); }
+        if (!response.ok || !data.ok) throw new Error(data.error || 'HTTP ' + response.status);
+        return data;
+      } catch (error) {
+        if (error.name === 'AbortError') throw new Error('请求超时，请确认 Surge 正在运行后重试。');
+        throw error;
+      } finally { clearTimeout(timer); }
+    }
+    async function loadPolicies() {
+      if (busy) return;
+      policiesReady = false; policy.disabled = true; refreshButton.disabled = true;
+      note.textContent = '正在读取节点和策略组…'; update();
+      const previous = policy.value || stored('policy', '');
+      try {
+        const data = await api('context');
+        const blank = node('option', '请选择要检测的节点或策略组'); blank.value = '';
+        policy.replaceChildren(blank);
+        const groups = { group: '策略组', proxy: '独立节点', external: '订阅节点', configured: '模块指定策略', direct: '直连' };
+        for (const [kind, title] of Object.entries(groups)) {
+          const entries = data.policies.filter((item) => item.kind === kind);
+          if (!entries.length) continue;
+          const group = node('optgroup'); group.label = title;
+          for (const entry of entries) { const option = node('option', entry.label); option.value = entry.value; group.append(option); }
+          policy.append(group);
+        }
+        const values = data.policies.map((item) => item.value);
+        policy.value = values.includes(previous) ? previous : values.includes(data.defaultPolicy) ? data.defaultPolicy : '';
+        policiesReady = true; policy.disabled = false;
+        note.textContent = data.warning || '建议选择一个固定节点，便于比较检测结果。';
+      } catch (error) { note.textContent = error.message; }
+      finally { refreshButton.disabled = false; update(); }
+    }
+    function cleanReports() {
+      for (const observer of observers.splice(0)) observer.disconnect();
+      results.replaceChildren();
+      for (const url of blobURLs.splice(0)) URL.revokeObjectURL(url);
+    }
+    function makeCard(id, title) {
+      const details = node('details', undefined, 'result');
+      details.dataset.module = id; details.dataset.state = 'waiting';
+      const summary = node('summary');
+      const dot = node('span', undefined, 'dot'); dot.setAttribute('aria-hidden', 'true');
+      const status = node('span', '等待检测', 'status');
+      const content = node('div', undefined, 'content');
+      content.append(node('p', '此项目已加入队列。', 'muted'));
+      summary.append(dot, node('span', title, 'name'), status); details.append(summary, content); results.append(details);
+      return { details, status, content };
+    }
+    function renderReport(html, id, title, content) {
+      const css = 'html,body{margin:0!important;padding:0!important;background:#fff!important;color:#1c1c1e!important;color-scheme:light dark}'
+        + '.report-root{padding:8px 2px 12px!important}.report-title,.node-label,.report-note,.section-summary{display:none!important}'
+        + '.report-section{border:0!important;margin:0!important}.section-body{padding:4px 0!important}'
+        + (id === 'basic' ? '' : '.summary-card{display:none!important}')
+        + '@media(prefers-color-scheme:dark){html,body{background:#1c1c1e!important;color:#f2f2f7!important}}';
+      const documentHTML = '<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
+        + '<meta http-equiv="Content-Security-Policy" content="default-src &#39;none&#39;; style-src &#39;unsafe-inline&#39;; img-src data:; base-uri &#39;none&#39;; form-action &#39;none&#39;">'
+        + '<style>' + css + '</style></head><body>' + html + '</body></html>';
+      const frame = node('iframe', undefined, 'frame'); frame.title = title + '检测报告'; frame.referrerPolicy = 'no-referrer'; frame.loading = 'lazy';
+      frame.setAttribute('sandbox', 'allow-same-origin allow-popups allow-popups-to-escape-sandbox');
+      const url = URL.createObjectURL(new Blob([documentHTML], { type: 'text/html' })); blobURLs.push(url);
+      frame.addEventListener('load', () => {
+        function resize() {
+          try { const root = frame.contentDocument.querySelector('.report-root') || frame.contentDocument.body;
+            frame.style.height = Math.min(40000, Math.max(140, Math.ceil(root.getBoundingClientRect().height) + 6)) + 'px';
+          } catch (_) {}
+        }
+        resize(); setTimeout(resize, 300);
+        if (typeof ResizeObserver !== 'undefined') {
+          try { const observer = new ResizeObserver(resize); observer.observe(frame.contentDocument.body); observers.push(observer); } catch (_) {}
+        }
+      });
+      frame.src = url; content.replaceChildren(frame);
+    }
+    async function run() {
+      if (runButton.disabled || busy) return;
+      const selection = selected(), policyValue = policy.value, hideIP = mask.checked;
+      toggle(true); cleanReports(); el('target').textContent = '';
+      const cards = new Map(selection.map(([id, title]) => [id, makeCard(id, title)]));
+      let complete = 0, failed = 0, index = 0;
+      try {
+        const session = await api('session', { policy: policyValue });
+        el('target').textContent = '本次目标：' + session.node;
+        progress.textContent = '0/' + selection.length + ' 已完成 · 最多两项并发';
+        async function worker() {
+          while (index < selection.length) {
+            const [id, title] = selection[index++], card = cards.get(id);
+            card.details.dataset.state = 'running'; card.status.textContent = '检测中…';
+            try {
+              const data = await api('check', { run: session.run, module: id, mask: hideIP });
+              if (typeof data.html !== 'string') throw new Error('该项目没有返回报告。');
+              renderReport(data.html, id, title, card.content);
+              card.details.dataset.state = 'success'; card.status.textContent = '完成 · ' + (Number(data.elapsedMs || 0) / 1000).toFixed(1) + ' 秒';
+            } catch (error) {
+              failed++; card.details.dataset.state = 'error'; card.status.textContent = '失败'; card.content.replaceChildren(node('p', error.message, 'error'));
+            }
+            card.details.open = true; complete++;
+            progress.textContent = complete + '/' + selection.length + ' 已完成' + (failed ? ' · ' + failed + ' 项失败' : '');
+          }
+        }
+        await Promise.all([worker(), worker()]);
+        progress.textContent = selection.length + ' 项检测结束 · ' + (selection.length - failed) + ' 项完成' + (failed ? '，' + failed + ' 项失败，可稍后重试' : '');
+      } catch (error) {
+        for (const card of cards.values()) { card.details.dataset.state = 'error'; card.status.textContent = '未执行'; card.content.replaceChildren(node('p', error.message, 'error')); }
+        progress.textContent = error.message;
+      } finally { toggle(false); runButton.textContent = '重新检测'; }
+    }
+    runButton.addEventListener('click', run);
+    clearButton.addEventListener('click', () => {
+      if (busy) return; cleanReports(); results.append(node('p', '报告已清空，检测设置已保留。', 'empty muted'));
+      el('target').textContent = ''; progress.textContent = '报告已清空。';
+    });
+    refreshButton.addEventListener('click', loadPolicies);
+    update(); loadPolicies();
+  })();
+  </script>
+</body>
+</html>

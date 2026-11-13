@@ -1,0 +1,29 @@
+#!name=节点 IP 质量检测 · Surge
+#!desc=选择 Surge 节点或策略组，按需运行 15 项检测并在本地网页汇总报告。启用脚本后打开 http://paperclip.test/ipquality；报告页无需 MITM。面板或快捷脚本可发送网页入口通知。
+#!author=MaYIHEI[https://github.com/MaYIHEI/paperclip]
+#!homepage=https://github.com/KatyaSilva/loon-surge-remove-ads/tree/main/IPQuality
+#!openUrl=http://paperclip.test/ipquality
+#!category=网络工具
+#!version=2026.11.13
+#!requirement=CORE_VERSION>=20
+#!arguments=policy:
+#!arguments-desc=policy 可留空，进入网页后选择节点或策略组。也可填写已有策略名称，作为网页默认选项。外部订阅节点会在新版 Surge 中自动列出；旧版本可选择其策略组。
+
+[General]
+force-http-engine-hosts = %APPEND% paperclip.test
+
+[Host]
+paperclip.test = 192.0.2.1
+
+[Rule]
+DOMAIN,paperclip.test,DIRECT
+
+[Script]
+IPQuality_Web = type=http-request, pattern=^http:\/\/paperclip\.test\/ipquality(?:\/api\/[a-z]+)?(?:\?.*)?$, script-path=https://raw.githubusercontent.com/KatyaSilva/loon-surge-remove-ads/main/IPQuality/ipquality.js, requires-body=true, max-size=16384, timeout=65, engine=webview, argument="{{{policy}}}"
+IPQuality_Open = type=generic, script-path=https://raw.githubusercontent.com/KatyaSilva/loon-surge-remove-ads/main/IPQuality/ipquality.js, timeout=5, engine=webview
+IPQuality_Basic = type=generic, script-path=https://raw.githubusercontent.com/KatyaSilva/loon-surge-remove-ads/main/IPQuality/ipquality.js, timeout=5, engine=webview
+IPQuality_Risk = type=generic, script-path=https://raw.githubusercontent.com/KatyaSilva/loon-surge-remove-ads/main/IPQuality/ipquality.js, timeout=5, engine=webview
+IPQuality_Media = type=generic, script-path=https://raw.githubusercontent.com/KatyaSilva/loon-surge-remove-ads/main/IPQuality/ipquality.js, timeout=5, engine=webview
+
+[Panel]
+IPQuality = script-name=IPQuality_Open, title="IP 质量检测", content="点击刷新按钮，点按通知打开检测网页", style=info
