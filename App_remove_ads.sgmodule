@@ -1,5 +1,5 @@
 #!name=各软件去广告合集
-#!desc=Reddit、虎扑、航旅纵横、知乎、得物、闲鱼、爱奇艺、小红书、酷安、微信公众号、微博、网易邮箱大师、拼多多、夸克、京东、高德地图、滴滴、百度网盘、12306、Keep、QQ音乐、Soul、大麦、淘宝 的去广告模块，另含微信外部链接解锁。
+#!desc=Reddit、虎扑、航旅纵横、知乎、得物、闲鱼、爱奇艺、小红书、酷安、微信公众号、微博、网易邮箱大师、拼多多、夸克、京东、高德地图、滴滴、百度网盘、12306、Keep、QQ音乐、Soul、大麦、淘宝、飞猪旅行 的去广告模块，另含微信外部链接解锁。
 
 [Rule]
 # 航旅纵横
@@ -262,7 +262,6 @@ DOMAIN,ut.taobao.com,REJECT
 (?i)^https:\/\/acs\.m\.taobao\.com\/gw\/mtop\.damai\.mec\.popup\.get\/ data-type=text data="{}" status-code=200 header="Content-Type:application/json"
 
 # 淘宝
-(?i)^https:\/\/acs\.m\.taobao\.com\/gw\/mtop\.fliggy\.crm\.screen\.(allresource|predict) data-type=text data="{}" status-code=200 header="Content-Type:application/json"
 (?i)^https:\/\/acs\.m\.taobao\.com\/gw\/mtop\.alibaba\.advertisementservice\.getadv data-type=text data="{}" status-code=200 header="Content-Type:application/json"
 (?i)^https:\/\/acs\.m\.taobao\.com\/gw\/mtop\.alimama\.etao\.config\.query\/.+?etao_advertise data-type=text data="{}" status-code=200 header="Content-Type:application/json"
 (?i)^https:\/\/acs\.m\.taobao\.com\/gw\/mtop\.alimusic\.common\.mobileservice\.startinit data-type=text data="{}" status-code=200 header="Content-Type:application/json"
@@ -273,6 +272,14 @@ DOMAIN,ut.taobao.com,REJECT
 (?i)^https:\/\/acs\.m\.taobao\.com\/gw\/mtop\.trip\.activity\.querytmsresources data-type=text data="{}" status-code=200 header="Content-Type:application/json"
 (?i)^https:\/\/(?:gw|heic)\.alicdn\.com\/imgextra\/i\d\/\d*\/?[\w!]+-\d-(?:octopus|tps)-(?:1080|1125)-\d{4}\.(?:jpg|png)_(?:1\d{3}|9\d{2})x(?:\d|1\d{3}|9\d{2})q[59]0 data-type=text data="{}" status-code=200 header="Content-Type:application/json"
 (?i)^https:\/\/guide-acs\.m\.taobao\.com\/gw\/mtop\.taobao\.(volvo\.secondfloor\.getconfig|wireless\.home\.newface\.awesome\.get) data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+
+# 飞猪旅行
+# 来源：https://kelee.one/Tool/Loon/Lpx/TaobaoTravel_remove_ads.lpx；作者：可莉；上游日期：2026-10-02 13:57:49。
+# 开屏广告的两个接口复用合集原有规则。
+(?i)^https:\/\/acs\.m\.taobao\.com\/gw\/mtop\.fliggy\.crm\.screen\.(allresource|predict) data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+(?i)^https:\/\/acs\.m\.taobao\.com\/gw\/mtop\.fliggy\.tripzoo\.new\.couponlist\/ data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+(?i)^https:\/\/acs\.m\.taobao\.com\/gw\/mtop\.trip\.my\.recommendcard\/ data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+(?i)^https:\/\/acs\.m\.taobao\.com\/gw\/mtop\.fliggy\.recommend\.common\.guess\.tab\.feeds\/ data-type=text data="{}" status-code=200 header="Content-Type:application/json"
 
 [Body Rewrite]
 # Reddit
