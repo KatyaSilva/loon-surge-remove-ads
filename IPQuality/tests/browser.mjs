@@ -43,7 +43,11 @@ try {
   const frame = page.frameLocator('iframe.frame');
   await frame.locator('.report-root').waitFor();
   assert.ok(!(await frame.locator('body').innerText()).includes('203.0.113.24'));
-  assert.ok((await page.locator('iframe.frame').boundingBox()).height > 150);
+  await page.waitForFunction(() => {
+    const iframe = document.querySelector('iframe.frame');
+    const report = iframe?.contentDocument?.querySelector('.report-root');
+    return report && iframe.getBoundingClientRect().height >= report.getBoundingClientRect().height;
+  });
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
   const output = process.env.BROWSER_OUTPUT_DIR || '/private/tmp/ipquality-browser';
   await mkdir(output, { recursive: true });
@@ -57,7 +61,8 @@ try {
   await page.locator('[data-preset="risk"]').click();
   await page.locator('#run').click();
   await page.waitForFunction(() => document.querySelector('#progress').textContent.includes('3 项检测结束'));
-  assert.equal(await page.locator('.result[data-state="success"]').count(), 2);
+  assert.equal(await page.locator('.result[data-state="partial"]').count(), 2);
+  assert.ok(await page.locator('.notice').count() >= 2);
   assert.equal(await page.locator('.result[data-state="error"]').count(), 1);
   assert.ok(maximumActive <= 2);
   await page.locator('#clear').click();

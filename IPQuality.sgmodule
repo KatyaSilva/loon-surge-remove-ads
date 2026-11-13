@@ -4,10 +4,10 @@
 #!homepage=https://github.com/KatyaSilva/loon-surge-remove-ads/tree/main/IPQuality
 #!openUrl=http://paperclip.test/ipquality
 #!category=网络工具
-#!version=2026.11.13
+#!version=2026.11.14
 #!requirement=CORE_VERSION>=20
-#!arguments=policy:
-#!arguments-desc=policy 可留空，进入网页后选择节点或策略组。也可填写已有策略名称，作为网页默认选项。外部订阅节点会在新版 Surge 中自动列出；旧版本可选择其策略组。
+#!arguments=policy:DIRECT
+#!arguments-desc=policy 默认为 DIRECT（直连）。检测代理节点时，请在网页中选择节点或策略组；也可在此填写已有策略名称作为默认选项。外部订阅节点会在新版 Surge 中自动列出；旧版本可选择其策略组。
 
 [General]
 force-http-engine-hosts = %APPEND% paperclip.test

@@ -5,7 +5,7 @@
  */
 (function () {
   'use strict';
-  const VERSION = '2026.11.13';
+  const VERSION = '2026.11.14';
   const ORIGIN = 'http://paperclip.test';
   const PAGE_URL = ORIGIN + '/ipquality';
   const SESSION_KEY = 'paperclip.ipquality.surge.session';
@@ -14,8 +14,8 @@
   const QUERY_CACHE_TTL = 60000;
   const QUERY_CACHE_SLOTS = 32;
   const QUERY_CACHE_LIMIT = 64 * 1024;
-  const PAGE_HTML = "<!doctype html>\n<html lang=\"zh-CN\">\n<head>\n  <meta charset=\"utf-8\">\n  <meta name=\"viewport\" content=\"width=device-width,initial-scale=1,viewport-fit=cover\">\n  <meta name=\"color-scheme\" content=\"light dark\">\n  <title>节点 IP 质量检测</title>\n  <style>\n    :root{color-scheme:light dark;font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;background:#f2f2f7;color:#1c1c1e;--surface:#fff;--muted:#6e6e73;--line:#e5e5ea;--accent:#0874dc}\n    *{box-sizing:border-box}body{margin:0;padding:max(22px,env(safe-area-inset-top)) 16px max(36px,env(safe-area-inset-bottom));-webkit-font-smoothing:antialiased}\n    button,input,select{font:inherit}button,select{min-height:44px}button{cursor:pointer}button:disabled{cursor:default;opacity:.55}\n    :focus-visible{outline:3px solid var(--accent);outline-offset:3px}.shell{max-width:760px;margin:auto}.top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin:2px 2px 22px}h1{font-size:24px;letter-spacing:-.5px;margin:0 0 7px}h2{font-size:16px;margin:24px 2px 10px}\n    .muted,.note{color:var(--muted);font-size:12px;line-height:1.6}.badge{border-radius:999px;padding:6px 10px;color:#0874dc;background:#e4f1ff;font-size:12px;white-space:nowrap}.panel{background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden;margin-bottom:14px}\n    .policy{padding:16px}.policy label{display:block;font-size:14px;font-weight:600;margin-bottom:10px}.policy-controls{display:flex;gap:10px}.policy select{flex:1;min-width:0;border:1px solid var(--line);border-radius:10px;padding:8px;background:var(--surface);color:inherit}.secondary{background:var(--line);color:inherit;border:0;border-radius:10px;padding:0 14px}.note{margin:10px 0 0}.note:empty{display:none}\n    .presets{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 18px}.presets button{border:1px solid var(--line);border-radius:999px;background:var(--surface);color:inherit;padding:8px 15px;font-size:13px}.presets button[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:white}\n    .section-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.section-head h2{margin-top:14px}.option{display:flex;justify-content:space-between;align-items:center;min-height:56px;gap:16px;padding:12px 16px;border-bottom:1px solid var(--line);font-size:14px}.option:last-child{border-bottom:0}.option small{display:block;font-size:11px;font-weight:400;color:var(--muted);margin-top:4px}\n    .switch{position:relative;flex:none;width:46px;height:28px}.switch input{position:absolute;inset:0;margin:0;width:100%;height:100%;opacity:0;z-index:1;cursor:pointer}.track{position:absolute;inset:0;border-radius:999px;background:#c7c7cc;pointer-events:none}.track:after{content:\"\";position:absolute;top:2px;left:2px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 1px 3px #0003;transition:transform .15s}.switch input:checked+.track{background:#30b95a}.switch input:checked+.track:after{transform:translateX(18px)}.switch input:focus-visible+.track{outline:3px solid var(--accent);outline-offset:3px}\n    fieldset{border:0;padding:0;margin:0;min-inline-size:0}fieldset:disabled .option{opacity:.6}.actions{display:grid;grid-template-columns:1fr auto;gap:10px;margin-top:16px}.actions button{border:0;border-radius:13px;padding:10px 18px;font-weight:600}.run{background:#0874dc;color:#fff}.progress{margin:12px 2px;min-height:20px}.target{overflow-wrap:anywhere;margin:0 2px 10px;font-size:12px;color:var(--muted)}\n    .result{border-bottom:1px solid var(--line)}.result:last-child{border-bottom:0}.result summary{display:flex;align-items:center;gap:10px;min-height:58px;padding:14px 16px;cursor:pointer;list-style:none}.result summary::-webkit-details-marker{display:none}.result summary:after{content:\"›\";font-size:22px;transform:rotate(0deg);color:var(--muted)}.result[open] summary:after{transform:rotate(90deg)}.result .name{font-size:14px;font-weight:600;flex:1}.status{font-size:12px;color:var(--muted)}.dot{width:8px;height:8px;border-radius:50%;background:#aaa}.result[data-state=running] .dot{background:#f29523}.result[data-state=success] .dot{background:#2ba954}.result[data-state=error] .dot{background:#dc4545}.content{padding:0 12px 12px;border-top:1px solid var(--line)}.frame{width:100%;min-height:140px;border:0;display:block;background:var(--surface)}.empty,.error{padding:20px 16px;font-size:13px;line-height:1.6;text-align:center;margin:0}.error{color:#c23b35}.footer{margin:22px 2px 0;font-size:11px;color:var(--muted);line-height:1.8}\n    @media(prefers-color-scheme:dark){:root{background:#000;color:#f2f2f7;--surface:#1c1c1e;--muted:#a1a1a6;--line:#303034;--accent:#0a84ff}.badge{background:#102b45;color:#64b5ff}.track{background:#48484a}.error{color:#ff817a}}\n    @media(prefers-reduced-motion:reduce){.track:after{transition:none}}@media(max-width:420px){body{padding-left:12px;padding-right:12px}.top{gap:10px}h1{font-size:21px}.policy-controls{flex-wrap:wrap}.policy select{flex-basis:100%}.policy-controls button{width:100%}}\n  </style>\n</head>\n<body>\n  <main class=\"shell\">\n    <header class=\"top\"><div><h1>节点 IP 质量检测</h1><div class=\"muted\">选择目标节点，按需检测并汇总报告</div></div><span class=\"badge\">Surge</span></header>\n    <section class=\"panel policy\" aria-label=\"检测节点\">\n      <label for=\"policy\">目标节点或策略组</label>\n      <div class=\"policy-controls\"><select id=\"policy\" disabled><option value=\"\">正在读取节点…</option></select><button type=\"button\" id=\"refresh\" class=\"secondary\">刷新列表</button></div>\n      <p id=\"policy-note\" class=\"note\" role=\"status\"></p>\n    </section>\n    <div class=\"presets\" role=\"group\" aria-label=\"快捷选择\">\n      <button type=\"button\" data-preset=\"basic\" aria-pressed=\"false\">基础信息</button>\n      <button type=\"button\" data-preset=\"risk\" aria-pressed=\"false\">风险检测</button>\n      <button type=\"button\" data-preset=\"media\" aria-pressed=\"false\">流媒体与 AI</button>\n      <button type=\"button\" data-preset=\"default\" aria-pressed=\"false\">常用组合</button>\n    </div>\n    <section class=\"panel\"><label class=\"option\" for=\"mask\"><span>隐藏 IP<small>对报告中的 IP 进行遮盖，方便截图分享</small></span><span class=\"switch\"><input type=\"checkbox\" id=\"mask\"><span class=\"track\"></span></span></label></section>\n    <section aria-labelledby=\"options-heading\">\n      <div class=\"section-head\"><h2 id=\"options-heading\">选择检测项目</h2><span class=\"muted\" id=\"count\"></span></div>\n      <fieldset id=\"options\" class=\"panel\" aria-labelledby=\"options-heading\"></fieldset>\n    </section>\n    <div class=\"actions\"><button type=\"button\" id=\"run\" class=\"run\" disabled>开始检测</button><button type=\"button\" id=\"clear\" class=\"secondary\">清空报告</button></div>\n    <p id=\"progress\" class=\"muted progress\" role=\"status\" aria-live=\"polite\">读取节点列表后，选择需要的检测项目。</p>\n    <section aria-labelledby=\"results-heading\">\n      <h2 id=\"results-heading\">检测报告</h2>\n      <p id=\"target\" class=\"target\"></p>\n      <div id=\"results\" class=\"panel\"><p class=\"empty muted\">选择节点并开始检测后，结果会显示在这里。</p></div>\n    </section>\n    <p class=\"footer\">请保持 Surge 运行。出口探测、媒体检测和测速使用所选节点；部分数据库与外部探针服务直连查询。不会修改全局策略。<br>HTTPS 测速是轻量估算；三网延迟与 MTR 来自外部探针，不等同于手机到节点的延迟或节点真实回程。</p>\n  </main>\n  <script>\n  (function () {\n    'use strict';\n    const modules = [\n      ['basic', '基础信息'], ['types', 'IP 类型属性'], ['scores', '风险评分'],\n      ['factors', '风险因素'], ['egress', '出口分流'], ['bgp', 'BGP 信息'],\n      ['bgppath', 'BGP 路径'], ['speed', '节点 HTTPS 轻量测速'],\n      ['inbound', '外部探针入站路径'], ['ping', '三网探针延迟'],\n      ['mtr', '外部探针 MTR'], ['stability', 'HTTPS 稳定性'],\n      ['media', '流媒体与 AI'], ['regions', '地区一致性'], ['status', '数据状态'],\n    ];\n    const presets = { basic: ['basic'], risk: ['types', 'scores', 'factors'], media: ['media', 'regions'], default: ['basic', 'types', 'scores', 'media'] };\n    const key = 'paperclip.ipquality.surge.';\n    const el = (id) => document.getElementById(id);\n    const options = el('options'), results = el('results'), policy = el('policy');\n    const runButton = el('run'), clearButton = el('clear'), refreshButton = el('refresh'), mask = el('mask');\n    const progress = el('progress'), note = el('policy-note');\n    const checks = new Map(), blobURLs = [], observers = [];\n    let busy = false, policiesReady = false;\n\n    function stored(name, fallback) { try { return JSON.parse(localStorage.getItem(key + name)) ?? fallback; } catch (_) { return fallback; } }\n    function save(name, value) { try { localStorage.setItem(key + name, JSON.stringify(value)); } catch (_) {} }\n    function node(tag, text, className) {\n      const item = document.createElement(tag);\n      if (text !== undefined) item.textContent = text;\n      if (className) item.className = className;\n      return item;\n    }\n    let saved = stored('modules', presets.default);\n    if (!Array.isArray(saved)) saved = presets.default;\n    const queryPreset = new URLSearchParams(location.search).get('preset');\n    if (Object.prototype.hasOwnProperty.call(presets, queryPreset)) saved = presets[queryPreset];\n    for (const [id, title] of modules) {\n      const label = node('label', undefined, 'option');\n      label.htmlFor = 'check-' + id;\n      const wrap = node('span', undefined, 'switch');\n      const input = node('input');\n      input.type = 'checkbox'; input.id = 'check-' + id; input.checked = saved.includes(id);\n      input.addEventListener('change', () => { saveSelection(); update(); });\n      checks.set(id, input);\n      wrap.append(input, node('span', undefined, 'track'));\n      label.append(node('span', title), wrap); options.append(label);\n    }\n    mask.checked = stored('mask', false) === true;\n    mask.addEventListener('change', () => save('mask', mask.checked));\n    policy.addEventListener('change', () => { save('policy', policy.value); update(); });\n    for (const button of document.querySelectorAll('[data-preset]')) {\n      button.addEventListener('click', () => {\n        if (busy) return;\n        for (const [id, input] of checks) input.checked = presets[button.dataset.preset].includes(id);\n        saveSelection(); update();\n      });\n    }\n    function selected() { return modules.filter(([id]) => checks.get(id).checked); }\n    function saveSelection() { save('modules', selected().map(([id]) => id)); }\n    function update() {\n      const selection = selected().map(([id]) => id);\n      el('count').textContent = selection.length + ' 项已选择';\n      runButton.disabled = busy || !policiesReady || !policy.value || !selection.length;\n      for (const button of document.querySelectorAll('[data-preset]')) {\n        const values = presets[button.dataset.preset];\n        button.setAttribute('aria-pressed', String(values.length === selection.length && values.every((id) => selection.includes(id))));\n        button.disabled = busy;\n      }\n    }\n    function toggle(value) {\n      busy = value; options.disabled = value; mask.disabled = value;\n      policy.disabled = value || !policiesReady; clearButton.disabled = value; refreshButton.disabled = value;\n      runButton.textContent = value ? '正在检测…' : '开始检测'; update();\n    }\n    async function api(path, body) {\n      const controller = new AbortController();\n      const timer = setTimeout(() => controller.abort(), path === 'check' ? 70000 : 10000);\n      const headers = { Accept: 'application/json', 'X-IPQuality-Client': '1' };\n      if (body !== undefined) headers['Content-Type'] = 'application/json';\n      try {\n        const response = await fetch('/ipquality/api/' + path, {\n          method: body === undefined ? 'GET' : 'POST', headers,\n          body: body === undefined ? undefined : JSON.stringify(body),\n          cache: 'no-store', credentials: 'omit', signal: controller.signal,\n        });\n        let data;\n        try { data = await response.json(); } catch (_) { throw new Error('检测接口未返回有效数据，请确认模块和脚本已启用。'); }\n        if (!response.ok || !data.ok) throw new Error(data.error || 'HTTP ' + response.status);\n        return data;\n      } catch (error) {\n        if (error.name === 'AbortError') throw new Error('请求超时，请确认 Surge 正在运行后重试。');\n        throw error;\n      } finally { clearTimeout(timer); }\n    }\n    async function loadPolicies() {\n      if (busy) return;\n      policiesReady = false; policy.disabled = true; refreshButton.disabled = true;\n      note.textContent = '正在读取节点和策略组…'; update();\n      const previous = policy.value || stored('policy', '');\n      try {\n        const data = await api('context');\n        const blank = node('option', '请选择要检测的节点或策略组'); blank.value = '';\n        policy.replaceChildren(blank);\n        const groups = { group: '策略组', proxy: '独立节点', external: '订阅节点', configured: '模块指定策略', direct: '直连' };\n        for (const [kind, title] of Object.entries(groups)) {\n          const entries = data.policies.filter((item) => item.kind === kind);\n          if (!entries.length) continue;\n          const group = node('optgroup'); group.label = title;\n          for (const entry of entries) { const option = node('option', entry.label); option.value = entry.value; group.append(option); }\n          policy.append(group);\n        }\n        const values = data.policies.map((item) => item.value);\n        policy.value = values.includes(previous) ? previous : values.includes(data.defaultPolicy) ? data.defaultPolicy : '';\n        policiesReady = true; policy.disabled = false;\n        note.textContent = data.warning || '建议选择一个固定节点，便于比较检测结果。';\n      } catch (error) { note.textContent = error.message; }\n      finally { refreshButton.disabled = false; update(); }\n    }\n    function cleanReports() {\n      for (const observer of observers.splice(0)) observer.disconnect();\n      results.replaceChildren();\n      for (const url of blobURLs.splice(0)) URL.revokeObjectURL(url);\n    }\n    function makeCard(id, title) {\n      const details = node('details', undefined, 'result');\n      details.dataset.module = id; details.dataset.state = 'waiting';\n      const summary = node('summary');\n      const dot = node('span', undefined, 'dot'); dot.setAttribute('aria-hidden', 'true');\n      const status = node('span', '等待检测', 'status');\n      const content = node('div', undefined, 'content');\n      content.append(node('p', '此项目已加入队列。', 'muted'));\n      summary.append(dot, node('span', title, 'name'), status); details.append(summary, content); results.append(details);\n      return { details, status, content };\n    }\n    function renderReport(html, id, title, content) {\n      const css = 'html,body{margin:0!important;padding:0!important;background:#fff!important;color:#1c1c1e!important;color-scheme:light dark}'\n        + '.report-root{padding:8px 2px 12px!important}.report-title,.node-label,.report-note,.section-summary{display:none!important}'\n        + '.report-section{border:0!important;margin:0!important}.section-body{padding:4px 0!important}'\n        + (id === 'basic' ? '' : '.summary-card{display:none!important}')\n        + '@media(prefers-color-scheme:dark){html,body{background:#1c1c1e!important;color:#f2f2f7!important}}';\n      const documentHTML = '<!doctype html><html lang=\"zh-CN\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">'\n        + '<meta http-equiv=\"Content-Security-Policy\" content=\"default-src &#39;none&#39;; style-src &#39;unsafe-inline&#39;; img-src data:; base-uri &#39;none&#39;; form-action &#39;none&#39;\">'\n        + '<style>' + css + '</style></head><body>' + html + '</body></html>';\n      const frame = node('iframe', undefined, 'frame'); frame.title = title + '检测报告'; frame.referrerPolicy = 'no-referrer'; frame.loading = 'lazy';\n      frame.setAttribute('sandbox', 'allow-same-origin allow-popups allow-popups-to-escape-sandbox');\n      const url = URL.createObjectURL(new Blob([documentHTML], { type: 'text/html' })); blobURLs.push(url);\n      frame.addEventListener('load', () => {\n        function resize() {\n          try { const root = frame.contentDocument.querySelector('.report-root') || frame.contentDocument.body;\n            frame.style.height = Math.min(40000, Math.max(140, Math.ceil(root.getBoundingClientRect().height) + 6)) + 'px';\n          } catch (_) {}\n        }\n        resize(); setTimeout(resize, 300);\n        if (typeof ResizeObserver !== 'undefined') {\n          try { const observer = new ResizeObserver(resize); observer.observe(frame.contentDocument.body); observers.push(observer); } catch (_) {}\n        }\n      });\n      frame.src = url; content.replaceChildren(frame);\n    }\n    async function run() {\n      if (runButton.disabled || busy) return;\n      const selection = selected(), policyValue = policy.value, hideIP = mask.checked;\n      toggle(true); cleanReports(); el('target').textContent = '';\n      const cards = new Map(selection.map(([id, title]) => [id, makeCard(id, title)]));\n      let complete = 0, failed = 0, index = 0;\n      try {\n        const session = await api('session', { policy: policyValue });\n        el('target').textContent = '本次目标：' + session.node;\n        progress.textContent = '0/' + selection.length + ' 已完成 · 最多两项并发';\n        async function worker() {\n          while (index < selection.length) {\n            const [id, title] = selection[index++], card = cards.get(id);\n            card.details.dataset.state = 'running'; card.status.textContent = '检测中…';\n            try {\n              const data = await api('check', { run: session.run, module: id, mask: hideIP });\n              if (typeof data.html !== 'string') throw new Error('该项目没有返回报告。');\n              renderReport(data.html, id, title, card.content);\n              card.details.dataset.state = 'success'; card.status.textContent = '完成 · ' + (Number(data.elapsedMs || 0) / 1000).toFixed(1) + ' 秒';\n            } catch (error) {\n              failed++; card.details.dataset.state = 'error'; card.status.textContent = '失败'; card.content.replaceChildren(node('p', error.message, 'error'));\n            }\n            card.details.open = true; complete++;\n            progress.textContent = complete + '/' + selection.length + ' 已完成' + (failed ? ' · ' + failed + ' 项失败' : '');\n          }\n        }\n        await Promise.all([worker(), worker()]);\n        progress.textContent = selection.length + ' 项检测结束 · ' + (selection.length - failed) + ' 项完成' + (failed ? '，' + failed + ' 项失败，可稍后重试' : '');\n      } catch (error) {\n        for (const card of cards.values()) { card.details.dataset.state = 'error'; card.status.textContent = '未执行'; card.content.replaceChildren(node('p', error.message, 'error')); }\n        progress.textContent = error.message;\n      } finally { toggle(false); runButton.textContent = '重新检测'; }\n    }\n    runButton.addEventListener('click', run);\n    clearButton.addEventListener('click', () => {\n      if (busy) return; cleanReports(); results.append(node('p', '报告已清空，检测设置已保留。', 'empty muted'));\n      el('target').textContent = ''; progress.textContent = '报告已清空。';\n    });\n    refreshButton.addEventListener('click', loadPolicies);\n    update(); loadPolicies();\n  })();\n  </script>\n</body>\n</html>\n";
-  const PAGE_CSP = "default-src 'none'; script-src 'sha256-Ex57deS/wQsFPSNblsHm/zJlizO0MCSV8KA4QE3wijE='; style-src 'unsafe-inline'; connect-src 'self'; frame-src 'self' blob:; img-src data:; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'self'; require-trusted-types-for 'script'";
+  const PAGE_HTML = "<!doctype html>\n<html lang=\"zh-CN\">\n<head>\n  <meta charset=\"utf-8\">\n  <meta name=\"viewport\" content=\"width=device-width,initial-scale=1,viewport-fit=cover\">\n  <meta name=\"color-scheme\" content=\"light dark\">\n  <title>节点 IP 质量检测</title>\n  <style>\n    :root{color-scheme:light dark;font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;background:#f2f2f7;color:#1c1c1e;--surface:#fff;--muted:#6e6e73;--line:#e5e5ea;--accent:#0874dc}\n    *{box-sizing:border-box}body{margin:0;padding:max(22px,env(safe-area-inset-top)) 16px max(36px,env(safe-area-inset-bottom));-webkit-font-smoothing:antialiased}\n    button,input,select{font:inherit}button,select{min-height:44px}button{cursor:pointer}button:disabled{cursor:default;opacity:.55}\n    :focus-visible{outline:3px solid var(--accent);outline-offset:3px}.shell{max-width:760px;margin:auto}.top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin:2px 2px 22px}h1{font-size:24px;letter-spacing:-.5px;margin:0 0 7px}h2{font-size:16px;margin:24px 2px 10px}\n    .muted,.note{color:var(--muted);font-size:12px;line-height:1.6}.badge{border-radius:999px;padding:6px 10px;color:#0874dc;background:#e4f1ff;font-size:12px;white-space:nowrap}.panel{background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden;margin-bottom:14px}\n    .policy{padding:16px}.policy label{display:block;font-size:14px;font-weight:600;margin-bottom:10px}.policy-controls{display:flex;gap:10px}.policy select{flex:1;min-width:0;border:1px solid var(--line);border-radius:10px;padding:8px;background:var(--surface);color:inherit}.secondary{background:var(--line);color:inherit;border:0;border-radius:10px;padding:0 14px}.note{margin:10px 0 0}.note:empty{display:none}\n    .presets{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 18px}.presets button{border:1px solid var(--line);border-radius:999px;background:var(--surface);color:inherit;padding:8px 15px;font-size:13px}.presets button[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:white}\n    .section-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.section-head h2{margin-top:14px}.option{display:flex;justify-content:space-between;align-items:center;min-height:56px;gap:16px;padding:12px 16px;border-bottom:1px solid var(--line);font-size:14px}.option:last-child{border-bottom:0}.option small{display:block;font-size:11px;font-weight:400;color:var(--muted);margin-top:4px}\n    .switch{position:relative;flex:none;width:46px;height:28px}.switch input{position:absolute;inset:0;margin:0;width:100%;height:100%;opacity:0;z-index:1;cursor:pointer}.track{position:absolute;inset:0;border-radius:999px;background:#c7c7cc;pointer-events:none}.track:after{content:\"\";position:absolute;top:2px;left:2px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 1px 3px #0003;transition:transform .15s}.switch input:checked+.track{background:#30b95a}.switch input:checked+.track:after{transform:translateX(18px)}.switch input:focus-visible+.track{outline:3px solid var(--accent);outline-offset:3px}\n    fieldset{border:0;padding:0;margin:0;min-inline-size:0}fieldset:disabled .option{opacity:.6}.actions{display:grid;grid-template-columns:1fr auto;gap:10px;margin-top:16px}.actions button{border:0;border-radius:13px;padding:10px 18px;font-weight:600}.run{background:#0874dc;color:#fff}.progress{margin:12px 2px;min-height:20px}.target{overflow-wrap:anywhere;margin:0 2px 10px;font-size:12px;color:var(--muted)}\n    .result{border-bottom:1px solid var(--line)}.result:last-child{border-bottom:0}.result summary{display:flex;align-items:center;gap:10px;min-height:58px;padding:14px 16px;cursor:pointer;list-style:none}.result summary::-webkit-details-marker{display:none}.result summary:after{content:\"›\";font-size:22px;transform:rotate(0deg);color:var(--muted)}.result[open] summary:after{transform:rotate(90deg)}.result .name{font-size:14px;font-weight:600;flex:1}.status{font-size:12px;color:var(--muted)}.dot{width:8px;height:8px;border-radius:50%;background:#aaa}.result[data-state=running] .dot{background:#f29523}.result[data-state=success] .dot{background:#2ba954}.result[data-state=error] .dot{background:#dc4545}.content{padding:0 12px 12px;border-top:1px solid var(--line)}.frame{width:100%;min-height:140px;border:0;display:block;background:var(--surface)}.empty,.error{padding:20px 16px;font-size:13px;line-height:1.6;text-align:center;margin:0}.error{color:#c23b35}.footer{margin:22px 2px 0;font-size:11px;color:var(--muted);line-height:1.8}\n    .result[data-state=partial] .dot{background:#d99318}.notice{font-size:12px;line-height:1.6;color:#8f5b00;margin:10px 2px;overflow-wrap:anywhere}\n    @media(prefers-color-scheme:dark){:root{background:#000;color:#f2f2f7;--surface:#1c1c1e;--muted:#a1a1a6;--line:#303034;--accent:#0a84ff}.badge{background:#102b45;color:#64b5ff}.track{background:#48484a}.error{color:#ff817a}.notice{color:#ffbd55}}\n    @media(prefers-reduced-motion:reduce){.track:after{transition:none}}@media(max-width:420px){body{padding-left:12px;padding-right:12px}.top{gap:10px}h1{font-size:21px}.policy-controls{flex-wrap:wrap}.policy select{flex-basis:100%}.policy-controls button{width:100%}}\n  </style>\n</head>\n<body>\n  <main class=\"shell\">\n    <header class=\"top\"><div><h1>节点 IP 质量检测</h1><div class=\"muted\">选择目标节点，按需检测并汇总报告</div></div><span class=\"badge\">Surge</span></header>\n    <section class=\"panel policy\" aria-label=\"检测节点\">\n      <label for=\"policy\">目标节点或策略组</label>\n      <div class=\"policy-controls\"><select id=\"policy\" disabled><option value=\"\">正在读取节点…</option></select><button type=\"button\" id=\"refresh\" class=\"secondary\">刷新列表</button></div>\n      <p id=\"policy-note\" class=\"note\" role=\"status\"></p>\n    </section>\n    <div class=\"presets\" role=\"group\" aria-label=\"快捷选择\">\n      <button type=\"button\" data-preset=\"basic\" aria-pressed=\"false\">基础信息</button>\n      <button type=\"button\" data-preset=\"risk\" aria-pressed=\"false\">风险检测</button>\n      <button type=\"button\" data-preset=\"media\" aria-pressed=\"false\">流媒体与 AI</button>\n      <button type=\"button\" data-preset=\"default\" aria-pressed=\"false\">常用组合</button>\n    </div>\n    <section class=\"panel\"><label class=\"option\" for=\"mask\"><span>隐藏 IP<small>对报告中的 IP 进行遮盖，方便截图分享</small></span><span class=\"switch\"><input type=\"checkbox\" id=\"mask\"><span class=\"track\"></span></span></label></section>\n    <section aria-labelledby=\"options-heading\">\n      <div class=\"section-head\"><h2 id=\"options-heading\">选择检测项目</h2><span class=\"muted\" id=\"count\"></span></div>\n      <fieldset id=\"options\" class=\"panel\" aria-labelledby=\"options-heading\"></fieldset>\n    </section>\n    <div class=\"actions\"><button type=\"button\" id=\"run\" class=\"run\" disabled>开始检测</button><button type=\"button\" id=\"clear\" class=\"secondary\">清空报告</button></div>\n    <p id=\"progress\" class=\"muted progress\" role=\"status\" aria-live=\"polite\">读取节点列表后，选择需要的检测项目。</p>\n    <section aria-labelledby=\"results-heading\">\n      <h2 id=\"results-heading\">检测报告</h2>\n      <p id=\"target\" class=\"target\"></p>\n      <div id=\"results\" class=\"panel\"><p class=\"empty muted\">选择节点并开始检测后，结果会显示在这里。</p></div>\n    </section>\n    <p class=\"footer\">请保持 Surge 运行。出口探测、媒体检测和测速使用所选节点；部分数据库与外部探针服务优先直连，网络故障时经所选节点重试。不会修改全局策略。<br>HTTPS 测速是轻量估算；三网延迟与 MTR 来自外部探针，不等同于手机到节点的延迟或节点真实回程。</p>\n  </main>\n  <script>\n  (function () {\n    'use strict';\n    const modules = [\n      ['basic', '基础信息'], ['types', 'IP 类型属性'], ['scores', '风险评分'],\n      ['factors', '风险因素'], ['egress', '出口分流'], ['bgp', 'BGP 信息'],\n      ['bgppath', 'BGP 路径'], ['speed', '节点 HTTPS 轻量测速'],\n      ['inbound', '外部探针入站路径'], ['ping', '三网探针延迟'],\n      ['mtr', '外部探针 MTR'], ['stability', 'HTTPS 稳定性'],\n      ['media', '流媒体与 AI'], ['regions', '地区一致性'], ['status', '数据状态'],\n    ];\n    const presets = { basic: ['basic'], risk: ['types', 'scores', 'factors'], media: ['media', 'regions'], default: ['basic', 'types', 'scores', 'media'] };\n    const key = 'paperclip.ipquality.surge.';\n    const el = (id) => document.getElementById(id);\n    const options = el('options'), results = el('results'), policy = el('policy');\n    const runButton = el('run'), clearButton = el('clear'), refreshButton = el('refresh'), mask = el('mask');\n    const progress = el('progress'), note = el('policy-note');\n    const checks = new Map(), blobURLs = [], observers = [];\n    let busy = false, policiesReady = false;\n\n    function stored(name, fallback) { try { return JSON.parse(localStorage.getItem(key + name)) ?? fallback; } catch (_) { return fallback; } }\n    function save(name, value) { try { localStorage.setItem(key + name, JSON.stringify(value)); } catch (_) {} }\n    function node(tag, text, className) {\n      const item = document.createElement(tag);\n      if (text !== undefined) item.textContent = text;\n      if (className) item.className = className;\n      return item;\n    }\n    let saved = stored('modules', presets.default);\n    if (!Array.isArray(saved)) saved = presets.default;\n    const queryPreset = new URLSearchParams(location.search).get('preset');\n    if (Object.prototype.hasOwnProperty.call(presets, queryPreset)) saved = presets[queryPreset];\n    for (const [id, title] of modules) {\n      const label = node('label', undefined, 'option');\n      label.htmlFor = 'check-' + id;\n      const wrap = node('span', undefined, 'switch');\n      const input = node('input');\n      input.type = 'checkbox'; input.id = 'check-' + id; input.checked = saved.includes(id);\n      input.addEventListener('change', () => { saveSelection(); update(); });\n      checks.set(id, input);\n      wrap.append(input, node('span', undefined, 'track'));\n      label.append(node('span', title), wrap); options.append(label);\n    }\n    mask.checked = stored('mask', false) === true;\n    mask.addEventListener('change', () => save('mask', mask.checked));\n    policy.addEventListener('change', () => { save('policy', policy.value); update(); });\n    for (const button of document.querySelectorAll('[data-preset]')) {\n      button.addEventListener('click', () => {\n        if (busy) return;\n        for (const [id, input] of checks) input.checked = presets[button.dataset.preset].includes(id);\n        saveSelection(); update();\n      });\n    }\n    function selected() { return modules.filter(([id]) => checks.get(id).checked); }\n    function saveSelection() { save('modules', selected().map(([id]) => id)); }\n    function update() {\n      const selection = selected().map(([id]) => id);\n      el('count').textContent = selection.length + ' 项已选择';\n      runButton.disabled = busy || !policiesReady || !policy.value || !selection.length;\n      for (const button of document.querySelectorAll('[data-preset]')) {\n        const values = presets[button.dataset.preset];\n        button.setAttribute('aria-pressed', String(values.length === selection.length && values.every((id) => selection.includes(id))));\n        button.disabled = busy;\n      }\n    }\n    function toggle(value) {\n      busy = value; options.disabled = value; mask.disabled = value;\n      policy.disabled = value || !policiesReady; clearButton.disabled = value; refreshButton.disabled = value;\n      runButton.textContent = value ? '正在检测…' : '开始检测'; update();\n    }\n    async function api(path, body) {\n      const controller = new AbortController();\n      const timer = setTimeout(() => controller.abort(), path === 'check' ? 70000 : 10000);\n      const headers = { Accept: 'application/json', 'X-IPQuality-Client': '1' };\n      if (body !== undefined) headers['Content-Type'] = 'application/json';\n      try {\n        const response = await fetch('/ipquality/api/' + path, {\n          method: body === undefined ? 'GET' : 'POST', headers,\n          body: body === undefined ? undefined : JSON.stringify(body),\n          cache: 'no-store', credentials: 'omit', signal: controller.signal,\n        });\n        let data;\n        try { data = await response.json(); } catch (_) { throw new Error('检测接口未返回有效数据，请确认模块和脚本已启用。'); }\n        if (!response.ok || !data.ok) throw new Error(data.error || 'HTTP ' + response.status);\n        return data;\n      } catch (error) {\n        if (error.name === 'AbortError') throw new Error('请求超时，请确认 Surge 正在运行后重试。');\n        throw error;\n      } finally { clearTimeout(timer); }\n    }\n    async function loadPolicies() {\n      if (busy) return;\n      policiesReady = false; policy.disabled = true; refreshButton.disabled = true;\n      note.textContent = '正在读取节点和策略组…'; update();\n      const previous = policy.value || stored('policy', '');\n      try {\n        const data = await api('context');\n        const blank = node('option', '请选择要检测的节点或策略组'); blank.value = '';\n        policy.replaceChildren(blank);\n        const groups = { group: '策略组', proxy: '独立节点', external: '订阅节点', configured: '模块指定策略', direct: '直连' };\n        for (const [kind, title] of Object.entries(groups)) {\n          const entries = data.policies.filter((item) => item.kind === kind);\n          if (!entries.length) continue;\n          const group = node('optgroup'); group.label = title;\n          for (const entry of entries) { const option = node('option', entry.label); option.value = entry.value; group.append(option); }\n          policy.append(group);\n        }\n        const values = data.policies.map((item) => item.value);\n        policy.value = values.includes(previous) ? previous : values.includes(data.defaultPolicy) ? data.defaultPolicy : '';\n        policiesReady = true; policy.disabled = false;\n        note.textContent = data.warning || '建议选择一个固定节点，便于比较检测结果。';\n      } catch (error) { note.textContent = error.message; }\n      finally { refreshButton.disabled = false; update(); }\n    }\n    function cleanReports() {\n      for (const observer of observers.splice(0)) observer.disconnect();\n      results.replaceChildren();\n      for (const url of blobURLs.splice(0)) URL.revokeObjectURL(url);\n    }\n    function makeCard(id, title) {\n      const details = node('details', undefined, 'result');\n      details.dataset.module = id; details.dataset.state = 'waiting';\n      const summary = node('summary');\n      const dot = node('span', undefined, 'dot'); dot.setAttribute('aria-hidden', 'true');\n      const status = node('span', '等待检测', 'status');\n      const content = node('div', undefined, 'content');\n      content.append(node('p', '此项目已加入队列。', 'muted'));\n      summary.append(dot, node('span', title, 'name'), status); details.append(summary, content); results.append(details);\n      return { details, status, content };\n    }\n    function renderReport(html, id, title, content) {\n      const css = 'html,body{margin:0!important;padding:0!important;background:#fff!important;color:#1c1c1e!important;color-scheme:light dark}'\n        + '.report-root{padding:8px 2px 12px!important}.report-title,.node-label,.report-note,.section-summary{display:none!important}'\n        + '.report-section{border:0!important;margin:0!important}.section-body{padding:4px 0!important}'\n        + (id === 'basic' ? '' : '.summary-card{display:none!important}')\n        + '@media(prefers-color-scheme:dark){html,body{background:#1c1c1e!important;color:#f2f2f7!important}}';\n      const documentHTML = '<!doctype html><html lang=\"zh-CN\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">'\n        + '<meta http-equiv=\"Content-Security-Policy\" content=\"default-src &#39;none&#39;; style-src &#39;unsafe-inline&#39;; img-src data:; base-uri &#39;none&#39;; form-action &#39;none&#39;\">'\n        + '<style>' + css + '</style></head><body>' + html + '</body></html>';\n      const frame = node('iframe', undefined, 'frame'); frame.title = title + '检测报告'; frame.referrerPolicy = 'no-referrer'; frame.loading = 'lazy';\n      frame.setAttribute('sandbox', 'allow-same-origin allow-popups allow-popups-to-escape-sandbox');\n      const url = URL.createObjectURL(new Blob([documentHTML], { type: 'text/html' })); blobURLs.push(url);\n      frame.addEventListener('load', () => {\n        function resize() {\n          try { const root = frame.contentDocument.querySelector('.report-root') || frame.contentDocument.body;\n            frame.style.height = Math.min(40000, Math.max(140, Math.ceil(root.getBoundingClientRect().height) + 6)) + 'px';\n          } catch (_) {}\n        }\n        resize(); setTimeout(resize, 300);\n        if (typeof ResizeObserver !== 'undefined') {\n          try { const observer = new ResizeObserver(resize); observer.observe(frame.contentDocument.body); observers.push(observer); } catch (_) {}\n        }\n      });\n      frame.src = url; content.replaceChildren(frame);\n    }\n    async function run() {\n      if (runButton.disabled || busy) return;\n      const selection = selected(), policyValue = policy.value, hideIP = mask.checked;\n      toggle(true); cleanReports(); el('target').textContent = '';\n      const cards = new Map(selection.map(([id, title]) => [id, makeCard(id, title)]));\n      let complete = 0, failed = 0, partial = 0, index = 0;\n      try {\n        const session = await api('session', { policy: policyValue });\n        el('target').textContent = '本次目标：' + session.node;\n        progress.textContent = '0/' + selection.length + ' 已完成 · 最多两项并发';\n        async function worker() {\n          while (index < selection.length) {\n            const [id, title] = selection[index++], card = cards.get(id);\n            card.details.dataset.state = 'running'; card.status.textContent = '检测中…';\n            try {\n              const data = await api('check', { run: session.run, module: id, mask: hideIP });\n              if (typeof data.html !== 'string') throw new Error('该项目没有返回报告。');\n              renderReport(data.html, id, title, card.content);\n              const incomplete = data.completion === 'partial';\n              if (incomplete) partial++;\n              card.details.dataset.state = incomplete ? 'partial' : 'success';\n              card.status.textContent = (incomplete ? '部分结果 · ' : '完成 · ') + (Number(data.elapsedMs || 0) / 1000).toFixed(1) + ' 秒';\n              if (Array.isArray(data.warnings) && data.warnings.length) card.content.prepend(node('p', data.warnings.join('；'), 'notice'));\n            } catch (error) {\n              failed++; card.details.dataset.state = 'error'; card.status.textContent = '失败'; card.content.replaceChildren(node('p', error.message, 'error'));\n            }\n            card.details.open = true; complete++;\n            progress.textContent = complete + '/' + selection.length + ' 已结束' + (partial ? ' · ' + partial + ' 项为部分结果' : '') + (failed ? ' · ' + failed + ' 项失败' : '');\n          }\n        }\n        await Promise.all([worker(), worker()]);\n        progress.textContent = selection.length + ' 项检测结束 · ' + (selection.length - failed - partial) + ' 项完整' + (partial ? '，' + partial + ' 项部分结果' : '') + (failed ? '，' + failed + ' 项失败，可稍后重试' : '');\n      } catch (error) {\n        for (const card of cards.values()) { card.details.dataset.state = 'error'; card.status.textContent = '未执行'; card.content.replaceChildren(node('p', error.message, 'error')); }\n        progress.textContent = error.message;\n      } finally { toggle(false); runButton.textContent = '重新检测'; }\n    }\n    runButton.addEventListener('click', run);\n    clearButton.addEventListener('click', () => {\n      if (busy) return; cleanReports(); results.append(node('p', '报告已清空，检测设置已保留。', 'empty muted'));\n      el('target').textContent = ''; progress.textContent = '报告已清空。';\n    });\n    refreshButton.addEventListener('click', loadPolicies);\n    update(); loadPolicies();\n  })();\n  </script>\n</body>\n</html>\n";
+  const PAGE_CSP = "default-src 'none'; script-src 'sha256-U1mfqIjN6CAk3FCDL+I60WwUrXzK9I40EqlfYOhLU8o='; style-src 'unsafe-inline'; connect-src 'self'; frame-src 'self' blob:; img-src data:; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'self'; require-trusted-types-for 'script'";
   const MODULES = {
     basic: { title: '基础信息', enabled: ['显示基础信息'] },
     types: { title: 'IP 类型属性', enabled: ['显示 IP 类型'] },
@@ -39,6 +39,7 @@
   let finished = false;
   let deadlineTimer;
   let cachedQueries = 0;
+  let routingFallbacks = 0;
 
   function finish(value) {
     if (finished) return;
@@ -210,11 +211,26 @@
           return;
         }
         try {
-          nativeHTTP[method](mapped, (err, reply, data) => {
+          const startedAt = Date.now();
+          const budget = Number(mapped.timeout) || 5;
+          const host = new URL(mapped.url).hostname;
+          const canFallback = method === 'get' && mapped.policy === 'DIRECT' && session.node !== 'DIRECT'
+            && ['stat.ripe.net', 'api.globalping.io', 'ipinfo.io', 'ipwho.is', 'ipregistry.co', 'api.ipregistry.co', 'proxycheck.io', 'www.ip2location.io', 'db-ip.com'].includes(host);
+          const first = canFallback ? Object.assign({}, mapped, { timeout: Math.min(budget, 3) }) : mapped;
+          const deliver = (err, reply, data) => {
             if (!finished) {
               cacheMetadata(key, err, reply, data);
               callback(err, reply, data);
             }
+          };
+          nativeHTTP[method](first, (err, reply, data) => {
+            const remaining = budget - (Date.now() - startedAt) / 1000;
+            const status = Number(reply && reply.status);
+            if (!finished && canFallback && remaining > 0.25 && (err || status === 408 || status >= 500)) {
+              routingFallbacks++;
+              try { nativeHTTP[method](Object.assign({}, mapped, { policy: session.node, timeout: remaining }), deliver); }
+              catch (fallbackError) { deliver(String(fallbackError), null, null); }
+            } else deliver(err, reply, data);
           });
         } catch (err) { callback(String(err), null, null); }
       };
@@ -271,10 +287,14 @@
       }
       response(200, {
         ok: true, module: name, title: config.title, node: session.label,
-        elapsedMs: Date.now() - start, cachedQueries,
+        elapsedMs: Date.now() - start, cachedQueries, routingFallbacks,
+        completion: result.diagnostics && result.diagnostics.completion || 'complete',
+        warnings: result.diagnostics && result.diagnostics.warnings || [],
+        measurement: result.diagnostics && result.diagnostics.measurement || null,
         html: enhanceHTML(result.htmlMessage, name), version: VERSION,
       });
-    }, options, { params: { node: session.node, displayNode: session.label } }, client,
+    }, options, { params: { node: session.node, displayNode: session.label, module: name,
+      deadlineMs: ['inbound', 'ping', 'mtr'].includes(name) ? 55000 : 45000 } }, client,
     typeof $utils === 'undefined' ? {} : $utils,
     { post: () => {} });
   }
@@ -381,7 +401,7 @@ const IPPURE_URL = "https://my.ippure.com/v1/info";
 const IPIFY_URL = "https://api4.ipify.org?format=json";
 const IPAPI_URL = "https://api.ipapi.is/";
 const IPQUALITY_BACKEND = "https://ipinfo.check.place";
-const RUN_DEADLINE_MS = 45000;
+const RUN_DEADLINE_MS = Number($environment.params.deadlineMs) || 45000;
 const DEFAULT_REQUEST_TIMEOUT = 7000;
 const MAX_CONCURRENT_REQUESTS = 8;
 const SPEED_DOWNLOAD_BYTES = 1000000;
@@ -777,42 +797,27 @@ async function collectInboundRoutes(ip) {
 }
 
 async function createGlobalpingMeasurement(type, target, measurementOptions, attempts) {
-    const body = JSON.stringify({
-        type,
-        target,
-        locations: GLOBALPING_LOCATIONS,
-        measurementOptions: measurementOptions || {},
-    });
-    const created = await capture(requestJson("https://api.globalping.io/v1/measurements", {
-        method: "POST",
-        node: "DIRECT",
-        timeout: 8000,
-        body,
-        headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            "User-Agent": "paperclip-ipquality/1.0",
-        },
+  const created = await capture(requestJson('https://api.globalping.io/v1/measurements', {
+    method: 'POST', node: 'DIRECT', timeout: 8000,
+    body: JSON.stringify({ type, target, locations: GLOBALPING_LOCATIONS, measurementOptions: measurementOptions || {} }),
+    headers: { Accept: 'application/json', 'Content-Type': 'application/json', 'User-Agent': 'paperclip-ipquality/1.0' },
+  }));
+  if (!created.ok || !created.value || !created.value.id) {
+    return { error: `Globalping 创建测量失败：${created.error || '未返回任务编号'}` };
+  }
+  let measurement = null;
+  for (let attempt = 0; attempt < Math.max(30, attempts || 0) && deadlineRemaining() > 1800; attempt++) {
+    await delay(attempt ? 1400 : 700);
+    if (deadlineRemaining() < 800) break;
+    const polled = await capture(requestJson(`https://api.globalping.io/v1/measurements/${encodeURIComponent(created.value.id)}`, {
+      node: 'DIRECT', timeout: Math.min(6000, deadlineRemaining() - 200),
     }));
-    if (!created.ok || !created.value || !created.value.id) {
-        return { error: `Globalping 创建测量失败：${created.error || "未返回任务编号"}` };
-    }
-    let measurement = null;
-    const maxAttempts = Math.max(1, attempts || 4);
-    for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
-        if (deadlineRemaining() < 1200) break;
-        await delay(attempt ? 1400 : 900);
-        const polled = await capture(requestJson(
-            `https://api.globalping.io/v1/measurements/${encodeURIComponent(created.value.id)}`,
-            { node: "DIRECT", timeout: 8000 }
-        ));
-        if (polled.ok) measurement = polled.value;
-        if (measurement && measurement.status !== "in-progress") break;
-    }
-    if (!measurement) return { error: "Globalping 测量结果未返回" };
-    return measurement;
+    if (polled.ok) measurement = polled.value;
+    if (measurement && measurement.status && measurement.status !== 'in-progress'
+      && !(measurement.results || []).some((item) => item.result && item.result.status === 'in-progress')) break;
+  }
+  return measurement || { error: 'Globalping 测量结果未返回' };
 }
-
 function parseInboundMeasurement(measurement) {
     const routes = (Array.isArray(measurement && measurement.results)
         ? measurement.results : []).map((item) => {
@@ -973,7 +978,6 @@ async function discoverIP() {
         ["ident.me", requestText("https://v4.ident.me/")],
         ["icanhazip", requestText("https://ipv4.icanhazip.com/")],
         ["IPPure", requestIppure()],
-        ["ipapi", requestJson(IPAPI_URL)],
     ];
     const settled = await Promise.all(definitions.map((item) => capture(item[1])));
     const observations = [];
@@ -1058,9 +1062,7 @@ async function collectDatabases(ip, discovery) {
         ippure: discovery.ippure
             ? Promise.resolve(discovery.ippure)
             : Promise.reject(new Error(discovery.ippureError || "IPPure 请求失败")),
-        ipapi: discovery.ipapi
-            ? Promise.resolve(discovery.ipapi)
-            : requestJson(`${IPAPI_URL}?q=${pathIP}`, { node: "DIRECT" }),
+        ipapi: Promise.resolve({ _surgeAnonymousLimited: true }),
         ipinfo: requestJson(`https://ipinfo.io/widget/demo/${pathIP}`, { node: "DIRECT" }),
         ipwhois: requestJson(`https://ipwho.is/${pathIP}`, { node: "DIRECT" }),
     };
@@ -1575,6 +1577,7 @@ function render(ip, data, media) {
     $done({
         title: "\u200B",
         htmlMessage: html,
+        diagnostics: surgeDiagnostics(data, audit, risks, media),
         icon: "shield.lefthalf.filled",
         "title-color": titleColor,
     });
@@ -1818,7 +1821,7 @@ function buildRisks(data) {
 
     return [
         ippureRisk,
-        ipapiMatch && Number.isFinite(ipapiRatio)
+        data.ipapi && data.ipapi._surgeAnonymousLimited ? null : ipapiMatch && Number.isFinite(ipapiRatio)
             ? {
                 name: "ipapi",
                 available: true,
@@ -2156,7 +2159,7 @@ function unavailableRisk(name) {
 
 function ipqsUpstreamUnavailable(data) {
     return !!(data && data.ipqs && data.ipqs.success === false
-        && /insufficient\s+credits?/i.test(data.ipqs.message || ""));
+        && /insufficient\s+credits?|(?:exceed|exhaust)[\s\S]*(?:quota|limit|credit)|(?:quota|limit|credit)[\s\S]*(?:exceed|exhaust)/i.test(data.ipqs.message || ""));
 }
 
 function ipapiSeverity(level) {
@@ -2197,7 +2200,7 @@ function buildAudit(data) {
         { keys: ["maxmind", "maxmindBackup"], name: "MaxMind", ok: !!((data.maxmind && (data.maxmind.Country || data.maxmind.ASN))
             || (data.maxmindBackup && (data.maxmindBackup.Country || data.maxmindBackup.ASN))) },
         { keys: ["ippure"], name: "IPPure", ok: !!(data.ippure && data.ippure.ip), supplemental: ippureMismatch },
-        { keys: ["ipapi"], name: "ipapi", ok: !!(data.ipapi && data.ipapi.ip) },
+        { keys: ["ipapi"], name: "ipapi", ok: !!(data.ipapi && data.ipapi.ip), skipped: !!(data.ipapi && data.ipapi._surgeAnonymousLimited) },
         { keys: ["ipinfo"], name: "IPinfo", ok: !!(data.ipinfo && data.ipinfo.data) },
         { keys: ["ipwhois"], name: "IPWhois", ok: !!(data.ipwhois && data.ipwhois.success !== false
             && (data.ipwhois.ip || data.ipwhois.country_code || data.ipwhois.connection)) },
@@ -2220,7 +2223,7 @@ function buildAudit(data) {
         total: checks.length,
         success: checks.filter((item) => item[1]).map((item) => item[0]),
         failed: checks.filter((item) => !item[1]).map((item) => item[0]),
-        skipped: included.filter((item) => item.skipped).map((item) => `${item.name}（上游额度不足）`),
+        skipped: included.filter((item) => item.skipped).map((item) => item.name === "ipapi" ? "ipapi（匿名接口不提供风险字段，已跳过）" : `${item.name}（上游配额用尽）`),
         supplemental: ippureMismatch
             ? [`IPPure（分流出口 ${maskIPAddress(data.ippure.ip)}）`]
             : [],
@@ -2476,22 +2479,21 @@ function renderInboundRoutes(result) {
 }
 
 function renderProbePing(result) {
-    if (!result || result.error) return mutedLine(result && result.error || "本次没有外部探针 Ping 结果");
-    const rows = Array.isArray(result.rows) ? result.rows : [];
-    const content = rows.map((row) => {
-        const name = uniqueValues([row.carrier, row.asn ? `AS${row.asn}` : "", row.location]).join(" · ");
-        const stats = row.avg !== null
-            ? `${row.avg} ms · 丢包 ${row.loss !== null ? `${row.loss}%` : "--"}`
-                + `${row.jitter !== null ? ` · 抖动 ${row.jitter} ms` : ""}`
-            : `${row.status || "未完成"} · 未返回 RTT`;
-        return infoLine(name || "外部探针", stats);
-    }).join("");
-    const missing = result.missing && result.missing.length
-        ? mutedLine(`当前无可用探针 · ${result.missing.join("、")}`) : "";
-    return (content || mutedLine("本次没有探针返回 Ping 统计")) + missing
-        + mutedLine(`Globalping 测量 ${result.id || "--"}；数据是指定 ASN 中国探针与出口 IP 之间的 ICMP 往返 RTT、丢包和抖动，无法拆分去程与回程。`);
+  if (!result || result.error) return mutedLine(result && result.error || '本次没有外部探针 Ping 结果');
+  const rows = Array.isArray(result.rows) ? result.rows : [];
+  const content = rows.map((row) => {
+    const name = uniqueValues([row.carrier, row.asn ? `AS${row.asn}` : '', row.location]).join(' · ');
+    const labels = { finished: '测量已完成', 'in-progress': '探针仍在执行', failed: '探针执行失败', offline: '探针离线' };
+    const stats = row.avg !== null
+      ? `${row.avg} ms · 丢包 ${row.loss !== null ? `${row.loss}%` : '--'}` + (row.jitter !== null ? ` · 抖动 ${row.jitter} ms` : '')
+      : row.status === 'finished' && row.loss === 100 ? '无 ICMP 响应 · 丢包 100%'
+        : `${labels[row.status] || '尚未完成'} · 未返回 RTT`;
+    return infoLine(name || '外部探针', stats);
+  }).join('');
+  const missing = result.missing && result.missing.length ? mutedLine(`当前无可用探针 · ${result.missing.join('、')}`) : '';
+  return (content || mutedLine('本次没有探针返回 Ping 统计')) + missing
+    + mutedLine(`Globalping 测量 ${result.id || '--'}；这是外部探针到出口 IP 的 ICMP 测量。100% 丢包表示本次未收到 ICMP 回应，不代表 HTTPS 或代理不可用。`);
 }
-
 function renderProbeMTR(result) {
     if (!result || result.error) return mutedLine(result && result.error || "本次没有外部探针 MTR 结果");
     const rows = Array.isArray(result.rows) ? result.rows : [];
@@ -3264,6 +3266,45 @@ function finishError(message) {
     });
 }
 
+function surgeDiagnostics(data, audit, risks, media) {
+  const module = params.module;
+  const warnings = [];
+  if (['basic', 'types', 'factors', 'egress', 'status'].includes(module) && audit.failed.length) {
+    warnings.push('未返回所需数据：' + audit.failed.join('、'));
+  }
+  if (module === 'scores') {
+    for (const risk of risks.filter((item) => !item.available)) {
+      const reason = risk.name === 'DB-IP' ? data._errors.dbip : '';
+      warnings.push(risk.name + (reason ? '：' + reason : '：未提供风险评分'));
+    }
+  }
+  if (['types', 'scores', 'factors', 'status'].includes(module)) warnings.push(...audit.skipped);
+  if (module === 'bgp' || module === 'bgppath') {
+    if (!data._bgp || data._bgp.error) warnings.push(data._bgp && data._bgp.error || 'BGP 数据未返回');
+    else if (module === 'bgppath' && !(data._bgp.pathAnalysis && data._bgp.pathAnalysis.pathCount)) warnings.push('本次未返回可分析的 BGP 路径');
+    else if (data._bgp.errors.length) warnings.push('BGP 部分来源未返回：' + data._bgp.errors.join('、'));
+  }
+  const probe = module === 'inbound' ? data._inboundRoutes : module === 'ping' ? data._probePing : module === 'mtr' ? data._probeMTR : null;
+  let measurement = null;
+  if (['inbound', 'ping', 'mtr'].includes(module)) {
+    if (!probe || probe.error) warnings.push(probe && probe.error || '外部探针结果未返回');
+    else {
+      const rows = probe.rows || probe.routes || [];
+      measurement = { id: probe.id, status: probe.status, total: rows.length,
+        pending: rows.filter((row) => row.status === 'in-progress').length,
+        unavailable: rows.filter((row) => ['failed', 'offline'].includes(row.status)).length };
+      if (probe.status === 'in-progress' || measurement.pending) warnings.push('外部测量在本次等待时限内仍未结束');
+      if (measurement.unavailable) warnings.push(measurement.unavailable + ' 个探针执行失败或离线');
+      if (!rows.length) warnings.push('没有返回可用探针');
+      if (probe.missing && probe.missing.length) warnings.push('缺少运营商探针：' + probe.missing.join('、'));
+    }
+  }
+  if (['media', 'regions'].includes(module)) {
+    const unknown = media.filter((item) => item.status === 'unknown').map((item) => item.name);
+    if (unknown.length) warnings.push('端点状态未确认：' + unknown.join('、'));
+  }
+  return { completion: warnings.length ? 'partial' : 'complete', warnings: uniqueValues(warnings), measurement };
+}
   }
 
   function runUpstreamSpeed($done, $persistentStore, $request, $httpClient) {
@@ -3304,6 +3345,8 @@ if (!session || !session.node || !requestRun || requestRun !== session.id) {
             node: session.node,
             elapsedMs: Date.now() - startedAt,
             html: renderReport(result),
+            completion: result.download && result.upload && result.latencyCount === 3 ? "complete" : "partial",
+            warnings: [].concat(result.download ? [] : ["下载未返回有效样本"], result.upload ? [] : ["上传未返回有效样本"], result.latencyCount === 3 ? [] : ["延迟样本未全部完成"]),
             version: SPEED_VERSION,
         }),
         (error) => respondJson(500, {

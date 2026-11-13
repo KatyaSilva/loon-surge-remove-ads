@@ -5,7 +5,7 @@
  */
 (function () {
   'use strict';
-  const VERSION = '2026.11.13';
+  const VERSION = '2026.11.14';
   const ORIGIN = 'http://paperclip.test';
   const PAGE_URL = ORIGIN + '/ipquality';
   const SESSION_KEY = 'paperclip.ipquality.surge.session';
@@ -39,6 +39,7 @@
   let finished = false;
   let deadlineTimer;
   let cachedQueries = 0;
+  let routingFallbacks = 0;
 
   function finish(value) {
     if (finished) return;
@@ -210,11 +211,26 @@
           return;
         }
         try {
-          nativeHTTP[method](mapped, (err, reply, data) => {
+          const startedAt = Date.now();
+          const budget = Number(mapped.timeout) || 5;
+          const host = new URL(mapped.url).hostname;
+          const canFallback = method === 'get' && mapped.policy === 'DIRECT' && session.node !== 'DIRECT'
+            && ['stat.ripe.net', 'api.globalping.io', 'ipinfo.io', 'ipwho.is', 'ipregistry.co', 'api.ipregistry.co', 'proxycheck.io', 'www.ip2location.io', 'db-ip.com'].includes(host);
+          const first = canFallback ? Object.assign({}, mapped, { timeout: Math.min(budget, 3) }) : mapped;
+          const deliver = (err, reply, data) => {
             if (!finished) {
               cacheMetadata(key, err, reply, data);
               callback(err, reply, data);
             }
+          };
+          nativeHTTP[method](first, (err, reply, data) => {
+            const remaining = budget - (Date.now() - startedAt) / 1000;
+            const status = Number(reply && reply.status);
+            if (!finished && canFallback && remaining > 0.25 && (err || status === 408 || status >= 500)) {
+              routingFallbacks++;
+              try { nativeHTTP[method](Object.assign({}, mapped, { policy: session.node, timeout: remaining }), deliver); }
+              catch (fallbackError) { deliver(String(fallbackError), null, null); }
+            } else deliver(err, reply, data);
           });
         } catch (err) { callback(String(err), null, null); }
       };
@@ -271,10 +287,14 @@
       }
       response(200, {
         ok: true, module: name, title: config.title, node: session.label,
-        elapsedMs: Date.now() - start, cachedQueries,
+        elapsedMs: Date.now() - start, cachedQueries, routingFallbacks,
+        completion: result.diagnostics && result.diagnostics.completion || 'complete',
+        warnings: result.diagnostics && result.diagnostics.warnings || [],
+        measurement: result.diagnostics && result.diagnostics.measurement || null,
         html: enhanceHTML(result.htmlMessage, name), version: VERSION,
       });
-    }, options, { params: { node: session.node, displayNode: session.label } }, client,
+    }, options, { params: { node: session.node, displayNode: session.label, module: name,
+      deadlineMs: ['inbound', 'ping', 'mtr'].includes(name) ? 55000 : 45000 } }, client,
     typeof $utils === 'undefined' ? {} : $utils,
     { post: () => {} });
   }

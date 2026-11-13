@@ -17,7 +17,8 @@
     .switch{position:relative;flex:none;width:46px;height:28px}.switch input{position:absolute;inset:0;margin:0;width:100%;height:100%;opacity:0;z-index:1;cursor:pointer}.track{position:absolute;inset:0;border-radius:999px;background:#c7c7cc;pointer-events:none}.track:after{content:"";position:absolute;top:2px;left:2px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 1px 3px #0003;transition:transform .15s}.switch input:checked+.track{background:#30b95a}.switch input:checked+.track:after{transform:translateX(18px)}.switch input:focus-visible+.track{outline:3px solid var(--accent);outline-offset:3px}
     fieldset{border:0;padding:0;margin:0;min-inline-size:0}fieldset:disabled .option{opacity:.6}.actions{display:grid;grid-template-columns:1fr auto;gap:10px;margin-top:16px}.actions button{border:0;border-radius:13px;padding:10px 18px;font-weight:600}.run{background:#0874dc;color:#fff}.progress{margin:12px 2px;min-height:20px}.target{overflow-wrap:anywhere;margin:0 2px 10px;font-size:12px;color:var(--muted)}
     .result{border-bottom:1px solid var(--line)}.result:last-child{border-bottom:0}.result summary{display:flex;align-items:center;gap:10px;min-height:58px;padding:14px 16px;cursor:pointer;list-style:none}.result summary::-webkit-details-marker{display:none}.result summary:after{content:"›";font-size:22px;transform:rotate(0deg);color:var(--muted)}.result[open] summary:after{transform:rotate(90deg)}.result .name{font-size:14px;font-weight:600;flex:1}.status{font-size:12px;color:var(--muted)}.dot{width:8px;height:8px;border-radius:50%;background:#aaa}.result[data-state=running] .dot{background:#f29523}.result[data-state=success] .dot{background:#2ba954}.result[data-state=error] .dot{background:#dc4545}.content{padding:0 12px 12px;border-top:1px solid var(--line)}.frame{width:100%;min-height:140px;border:0;display:block;background:var(--surface)}.empty,.error{padding:20px 16px;font-size:13px;line-height:1.6;text-align:center;margin:0}.error{color:#c23b35}.footer{margin:22px 2px 0;font-size:11px;color:var(--muted);line-height:1.8}
-    @media(prefers-color-scheme:dark){:root{background:#000;color:#f2f2f7;--surface:#1c1c1e;--muted:#a1a1a6;--line:#303034;--accent:#0a84ff}.badge{background:#102b45;color:#64b5ff}.track{background:#48484a}.error{color:#ff817a}}
+    .result[data-state=partial] .dot{background:#d99318}.notice{font-size:12px;line-height:1.6;color:#8f5b00;margin:10px 2px;overflow-wrap:anywhere}
+    @media(prefers-color-scheme:dark){:root{background:#000;color:#f2f2f7;--surface:#1c1c1e;--muted:#a1a1a6;--line:#303034;--accent:#0a84ff}.badge{background:#102b45;color:#64b5ff}.track{background:#48484a}.error{color:#ff817a}.notice{color:#ffbd55}}
     @media(prefers-reduced-motion:reduce){.track:after{transition:none}}@media(max-width:420px){body{padding-left:12px;padding-right:12px}.top{gap:10px}h1{font-size:21px}.policy-controls{flex-wrap:wrap}.policy select{flex-basis:100%}.policy-controls button{width:100%}}
   </style>
 </head>
@@ -47,7 +48,7 @@
       <p id="target" class="target"></p>
       <div id="results" class="panel"><p class="empty muted">选择节点并开始检测后，结果会显示在这里。</p></div>
     </section>
-    <p class="footer">请保持 Surge 运行。出口探测、媒体检测和测速使用所选节点；部分数据库与外部探针服务直连查询。不会修改全局策略。<br>HTTPS 测速是轻量估算；三网延迟与 MTR 来自外部探针，不等同于手机到节点的延迟或节点真实回程。</p>
+    <p class="footer">请保持 Surge 运行。出口探测、媒体检测和测速使用所选节点；部分数据库与外部探针服务优先直连，网络故障时经所选节点重试。不会修改全局策略。<br>HTTPS 测速是轻量估算；三网延迟与 MTR 来自外部探针，不等同于手机到节点的延迟或节点真实回程。</p>
   </main>
   <script>
   (function () {
@@ -209,7 +210,7 @@
       const selection = selected(), policyValue = policy.value, hideIP = mask.checked;
       toggle(true); cleanReports(); el('target').textContent = '';
       const cards = new Map(selection.map(([id, title]) => [id, makeCard(id, title)]));
-      let complete = 0, failed = 0, index = 0;
+      let complete = 0, failed = 0, partial = 0, index = 0;
       try {
         const session = await api('session', { policy: policyValue });
         el('target').textContent = '本次目标：' + session.node;
@@ -222,16 +223,20 @@
               const data = await api('check', { run: session.run, module: id, mask: hideIP });
               if (typeof data.html !== 'string') throw new Error('该项目没有返回报告。');
               renderReport(data.html, id, title, card.content);
-              card.details.dataset.state = 'success'; card.status.textContent = '完成 · ' + (Number(data.elapsedMs || 0) / 1000).toFixed(1) + ' 秒';
+              const incomplete = data.completion === 'partial';
+              if (incomplete) partial++;
+              card.details.dataset.state = incomplete ? 'partial' : 'success';
+              card.status.textContent = (incomplete ? '部分结果 · ' : '完成 · ') + (Number(data.elapsedMs || 0) / 1000).toFixed(1) + ' 秒';
+              if (Array.isArray(data.warnings) && data.warnings.length) card.content.prepend(node('p', data.warnings.join('；'), 'notice'));
             } catch (error) {
               failed++; card.details.dataset.state = 'error'; card.status.textContent = '失败'; card.content.replaceChildren(node('p', error.message, 'error'));
             }
             card.details.open = true; complete++;
-            progress.textContent = complete + '/' + selection.length + ' 已完成' + (failed ? ' · ' + failed + ' 项失败' : '');
+            progress.textContent = complete + '/' + selection.length + ' 已结束' + (partial ? ' · ' + partial + ' 项为部分结果' : '') + (failed ? ' · ' + failed + ' 项失败' : '');
           }
         }
         await Promise.all([worker(), worker()]);
-        progress.textContent = selection.length + ' 项检测结束 · ' + (selection.length - failed) + ' 项完成' + (failed ? '，' + failed + ' 项失败，可稍后重试' : '');
+        progress.textContent = selection.length + ' 项检测结束 · ' + (selection.length - failed - partial) + ' 项完整' + (partial ? '，' + partial + ' 项部分结果' : '') + (failed ? '，' + failed + ' 项失败，可稍后重试' : '');
       } catch (error) {
         for (const card of cards.values()) { card.details.dataset.state = 'error'; card.status.textContent = '未执行'; card.content.replaceChildren(node('p', error.message, 'error')); }
         progress.textContent = error.message;

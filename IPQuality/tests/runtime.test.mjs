@@ -87,6 +87,7 @@ test('all 15 modules finish with isolated synthetic responses and bind policies 
       assert.ok(data.html.includes('report-root'));
       assert.equal(value.doneCount, 1);
       assert.ok(value.calls.length > 0);
+      assert.ok(value.calls.every((call) => new URL(call.url).hostname !== 'api.ipapi.is'), 'do not consume limited anonymous ipapi requests');
       for (const call of value.calls) {
         assert.ok(!('node' in call));
         assert.ok(call.policy === 'DIRECT' || call.policy === 'POLICY::fixture-external', call.policy);
@@ -176,6 +177,86 @@ test('unknown modules never trigger any third-party request', async () => {
   const value = await evaluate(request('/api/check', { run: active.run, module: '__proto__' }), active);
   assert.equal(value.response.status, 400);
   assert.equal(value.calls.length, 0);
+});
+
+test('public metadata falls back from DIRECT to the selected policy on transport failures', async () => {
+  const active = await session();
+  const value = await evaluate(request('/api/check', { run: active.run, module: 'bgp' }), { ...active,
+    replyFor: (method, config) => new URL(config.url).hostname === 'stat.ripe.net' && config.policy === 'DIRECT'
+      ? { error: 'fixture timeout', status: 0, body: '' } : fixtureReply(method, config) });
+  const data = decode(value);
+  assert.equal(data.completion, 'complete');
+  assert.ok(data.routingFallbacks > 0);
+  assert.ok(value.calls.some((call) => new URL(call.url).hostname === 'stat.ripe.net' && call.policy === '测试节点 A'));
+  assert.ok(value.calls.filter((call) => new URL(call.url).hostname === 'stat.ripe.net' && call.policy === 'DIRECT').every((call) => call.timeout <= 3));
+});
+
+test('provider rate limits are reported without retrying from another policy', async () => {
+  const active = await session();
+  const value = await evaluate(request('/api/check', { run: active.run, module: 'bgp' }), { ...active,
+    replyFor: (method, config) => new URL(config.url).hostname === 'stat.ripe.net'
+      ? { status: 429, headers: { 'Retry-After': '60' }, body: '{}' } : fixtureReply(method, config) });
+  assert.equal(decode(value).completion, 'partial');
+  assert.ok(decode(value).warnings.some((message) => message.includes('429')));
+  assert.equal(value.calls.filter((call) => new URL(call.url).hostname === 'stat.ripe.net').length, 1);
+});
+
+test('Globalping waits beyond four polls and checks per-probe completion', async () => {
+  const active = await session(); let polls = 0;
+  const value = await evaluate(request('/api/check', { run: active.run, module: 'ping' }), { ...active, timeScale: 0.02,
+    replyFor: (method, config) => {
+      const reply = fixtureReply(method, config);
+      if (method === 'get' && new URL(config.url).hostname === 'api.globalping.io' && ++polls < 6) {
+        const body = JSON.parse(reply.body); body.status = 'in-progress';
+        body.results.forEach((item) => { item.result = { status: 'in-progress' }; }); reply.body = JSON.stringify(body);
+      }
+      return reply;
+    } });
+  assert.equal(polls, 6);
+  assert.equal(decode(value).completion, 'complete');
+  assert.equal(decode(value).measurement.pending, 0);
+});
+
+test('unfinished Globalping results are explicitly partial after the wait budget', async () => {
+  const active = await session();
+  const value = await evaluate(request('/api/check', { run: active.run, module: 'mtr' }), { ...active, timeScale: 0.01,
+    replyFor: (method, config) => {
+      const reply = fixtureReply(method, config);
+      if (method === 'get' && new URL(config.url).hostname === 'api.globalping.io') {
+        const body = JSON.parse(reply.body); body.status = 'in-progress';
+        body.results.forEach((item) => { item.result = { status: 'in-progress' }; }); reply.body = JSON.stringify(body);
+      }
+      return reply;
+    } });
+  const data = decode(value);
+  assert.equal(data.completion, 'partial');
+  assert.equal(data.measurement.pending, 3);
+  assert.ok(data.warnings.some((message) => message.includes('仍未结束')));
+});
+
+test('completed Ping with 100 percent loss is a measured no-response result', async () => {
+  const active = await session();
+  const value = await evaluate(request('/api/check', { run: active.run, module: 'ping' }), { ...active, timeScale: 0.05,
+    replyFor: (method, config) => {
+      const reply = fixtureReply(method, config);
+      if (method === 'get' && new URL(config.url).hostname === 'api.globalping.io') {
+        const body = JSON.parse(reply.body);
+        body.results.forEach((item) => { item.result.stats = { avg: null, min: null, max: null, loss: 100 }; item.result.timings = []; });
+        reply.body = JSON.stringify(body);
+      }
+      return reply;
+    } });
+  assert.equal(decode(value).completion, 'complete');
+  assert.ok(decode(value).html.includes('无 ICMP 响应 · 丢包 100%'));
+});
+
+test('speed reports missing measurements as partial instead of complete', async () => {
+  const active = await session();
+  const value = await evaluate(request('/api/check', { run: active.run, module: 'speed' }), { ...active,
+    replyFor: () => ({ status: 503, headers: {}, body: 'unavailable' }) });
+  const data = decode(value);
+  assert.equal(data.completion, 'partial');
+  assert.ok(data.warnings.includes('下载未返回有效样本'));
 });
 
 test('launchers use Surge notification URLs and automatic panel refresh is quiet', async () => {

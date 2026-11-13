@@ -35,8 +35,11 @@ export function fixtureReply(method, options) {
   if (url.hostname === 'api4.ipify.org') return json({ ip: IP });
   if (url.hostname === 'my.ippure.com') return json({ ip: IP, country: 'United States', countryCode: 'US', asn: 13335, riskScore: 10 });
   if (url.hostname === 'api.ipapi.is') return json({ ip: IP, asn: { asn: 13335, org: 'Offline Fixture' }, location: { country: 'United States', country_code: 'US', city: 'Test City', latitude: 37, longitude: -122 }, company: { name: 'Offline Fixture', type: 'hosting' } });
-  if (url.hostname === 'ipinfo.check.place') return json({ ip: IP, country: 'United States', country_code: 'US', city: 'Test City', latitude: 37, longitude: -122 });
-  if (url.hostname === 'ipinfo.io') return json({ ip: IP, country: 'US', city: 'Test City', org: 'AS13335 Offline Fixture', loc: '37,-122' });
+  if (url.hostname === 'ipinfo.check.place') return json({ ip: IP,
+    Country: { IsoCode: 'US', Name: 'United States' },
+    ASN: { AutonomousSystemNumber: 13335, AutonomousSystemOrganization: 'Offline Fixture' },
+    City: { Name: 'Test City', Latitude: 37, Longitude: -122, Location: { TimeZone: 'Etc/UTC' } } });
+  if (url.hostname === 'ipinfo.io') return json({ ip: IP, data: { ip: IP, country: 'US', city: 'Test City', org: 'AS13335 Offline Fixture', loc: '37,-122' } });
   if (url.hostname === 'ipwho.is') return json({ ip: IP, success: true, country: 'United States', country_code: 'US', latitude: 37, longitude: -122, connection: { asn: 13335, org: 'Offline Fixture' } });
   if (url.hostname === 'stat.ripe.net') {
     const endpoint = url.pathname.split('/')[2];
@@ -60,12 +63,18 @@ export async function evaluate(input, options = {}) {
   const store = options.store || new Map();
   const calls = [], apiCalls = [], notifications = [], logs = [], timers = new Set();
   const replyFor = options.replyFor || fixtureReply;
+  const timeScale = options.timeScale || 1;
+  const beganAt = Date.now();
+  class TestDate extends Date {
+    constructor(...args) { super(...(args.length ? args : [TestDate.now()])); }
+    static now() { return beganAt + (Date.now() - beganAt) / timeScale; }
+  }
   let doneCount = 0;
   return new Promise((resolve, reject) => {
     const watchdog = setTimeout(() => { cleanup(); reject(new Error('Offline script did not finish')); }, 12000);
     function cleanup() { clearTimeout(watchdog); for (const timer of timers) clearTimeout(timer); timers.clear(); }
     function later(fn, delay = 0) {
-      const timer = setTimeout(() => { timers.delete(timer); fn(); }, delay);
+      const timer = setTimeout(() => { timers.delete(timer); fn(); }, delay * timeScale);
       timers.add(timer); return timer;
     }
     function http(method, config, callback) {
@@ -77,7 +86,7 @@ export async function evaluate(input, options = {}) {
       }, 2);
     }
     const sandbox = {
-      URL, Uint8Array, ArrayBuffer, TextEncoder, TextDecoder, crypto: webcrypto,
+      URL, Uint8Array, ArrayBuffer, TextEncoder, TextDecoder, crypto: webcrypto, Date: TestDate,
       setTimeout: later,
       clearTimeout: (timer) => { timers.delete(timer); clearTimeout(timer); },
       console: { log: (...args) => logs.push(args.join(' ')) },
