@@ -1,0 +1,29 @@
+#!name=YouTube 去广告
+#!desc=适用于 YouTube / YouTube Music 客户端：过滤视频、信息流、搜索和 Shorts 广告，支持后台播放、画中画、字幕及歌词翻译，可选隐藏底栏按钮。需开启 Surge 的脚本与 MITM，并安装及信任 MITM 证书；不支持 tvOS。
+#!author=Maasea[https://github.com/Maasea], VirgilClyne[https://github.com/VirgilClyne], Choler[https://github.com/Choler], DivineEngine[https://github.com/DivineEngine], app2smile[https://github.com/app2smile]
+#!homepage=https://hub.kelee.one
+#!icon=https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/YouTube.png
+#!version=2026.11.13
+#!arguments=blockUpload:false,blockShorts:false,blockImmersive:false,captionLang:zh-Hans,debug:false
+#!arguments-desc=保留原 Loon 插件默认值。\nblockUpload：隐藏 YouTube 上传按钮，true / false。\nblockShorts：隐藏 YouTube Shorts 按钮，true / false。\nblockImmersive：隐藏 YouTube Music 选段按钮，true / false。\ncaptionLang：字幕及歌词翻译语言，zh-Hans / zh-Hant / ja / ko / en / off，off 为关闭翻译。\ndebug：调试日志，true / false。
+
+# 转换来源：https://kelee.one/Tool/Loon/Lpx/YouTube_remove_ads.lpx
+# 上游日期：2026-10-02 13:57:49；核对日期：2026-11-13。
+# 独立安装本模块即可，无需导入 Loon 插件或其他去广告合集。
+# 原插件引用的两份脚本已内置 Surge 适配；以下使用作者的公开源地址，避免 Loon UA 下载限制。
+# 核对时脚本正文与可莉版本一致，仅来源注释不同；远程脚本后续随作者更新。
+# 请停用其他匹配相同 YouTube 接口的脚本，避免首条匹配规则抢先执行。
+
+[Rule]
+# 阻止相关域名使用 QUIC，促使客户端回退至可由 MITM 处理的 HTTP/2 或 HTTP/1.1。
+AND,((PROTOCOL,QUIC),(DOMAIN-SUFFIX,googlevideo.com)),REJECT
+AND,((PROTOCOL,QUIC),(DOMAIN,youtubei.googleapis.com)),REJECT
+
+[Script]
+YouTube_remove_ads_response = type=http-response, pattern=(?i)^https:\/\/youtubei\.googleapis\.com\/(youtubei\/v1\/(browse|next|player|search|reel\/reel_watch_sequence|guide|account\/get_setting|get_watch|log_event|config))(\?(.*))?$, script-path=https://raw.githubusercontent.com/Maasea/sgmodule/master/Script/Youtube/youtube.response.js, requires-body=true, binary-body-mode=true, max-size=-1, timeout=20, argument="{"blockUpload":{{{blockUpload}}},"blockShorts":{{{blockShorts}}},"blockImmersive":{{{blockImmersive}}},"captionLang":"{{{captionLang}}}","debug":{{{debug}}}}", debug={{{debug}}}
+YouTube_remove_ads_initplayback = type=http-request, pattern=(?i)^https?:\/\/[\w-]+\.googlevideo\.com\/initplayback.+&ack.*, script-path=https://raw.githubusercontent.com/Maasea/sgmodule/master/Script/Youtube/youtube.request.js, requires-body=true, binary-body-mode=true, max-size=-1, timeout=20, argument="{"captionLang":"{{{captionLang}}}"}", debug={{{debug}}}
+YouTube_remove_ads_log_event = type=http-request, pattern=(?i)^https:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/log_event, script-path=https://raw.githubusercontent.com/Maasea/sgmodule/master/Script/Youtube/youtube.request.js, requires-body=true, binary-body-mode=true, max-size=-1, timeout=20, argument="{"blockUpload":{{{blockUpload}}},"blockShorts":{{{blockShorts}}},"blockImmersive":{{{blockImmersive}}},"captionLang":"{{{captionLang}}}","debug":{{{debug}}}}", debug={{{debug}}}
+
+[MITM]
+h2 = true
+hostname = %APPEND% *.googlevideo.com, youtubei.googleapis.com
