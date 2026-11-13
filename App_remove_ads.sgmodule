@@ -1,5 +1,5 @@
 #!name=各软件去广告合集
-#!desc=Reddit、虎扑、航旅纵横、知乎、得物、闲鱼、爱奇艺、小红书、酷安、微信公众号、微博、网易邮箱大师、拼多多、夸克、京东、高德地图、滴滴、百度网盘、12306、Keep、QQ音乐、Soul、大麦、淘宝 的去广告模块。
+#!desc=Reddit、虎扑、航旅纵横、知乎、得物、闲鱼、爱奇艺、小红书、酷安、微信公众号、微博、网易邮箱大师、拼多多、夸克、京东、高德地图、滴滴、百度网盘、12306、Keep、QQ音乐、Soul、大麦、淘宝 的去广告模块，另含微信外部链接解锁。
 
 [Rule]
 # 航旅纵横
@@ -455,6 +455,11 @@ http-response-jq (?i)^https:\/\/acs\.m\.taobao\.com\/gw\/mtop\.damai\.mec\.arist
 小红书_移除搜索页广告 = type=http-response, pattern=(?i)^https:\/\/(?:edith|so)\.xiaohongshu\.com\/api\/sns\/v10\/search\/notes\?, script-path=https://kelee.one/Resource/JavaScript/RedPaper/RedPaper_remove_ads.js, requires-body=true, max-size=-1, timeout=20
 小红书_移除视频水印 = type=http-response, pattern=(?i)^https:\/\/(?:edith|rec|www)\.xiaohongshu\.com\/api\/sns\/(?:v4\/note\/videofeed|v10\/note\/video\/save), script-path=https://kelee.one/Resource/JavaScript/RedPaper/RedPaper_remove_ads.js, requires-body=true, max-size=-1, timeout=20
 
+# 微信外部链接解锁
+# 来源：https://kelee.one/Tool/Loon/Lpx/Weixin_external_links_unlock.lpx；作者：zZPiglet；上游日期：2026-10-02 13:57:49。
+# 脚本使用原作者公开源，避免源站下载的 UA 限制；保留原作者对明文和 Base64 封禁链接的兼容。
+微信_外部链接解锁 = type=http-response, pattern=(?i)^https:\/\/(?:weixin110\.qq|security\.wechat)\.com\/cgi-bin\/mmspamsupport-bin\/newredirectconfirmcgi\?, script-path=https://raw.githubusercontent.com/zZPiglet/Task/master/asset/UnblockURLinWeChat.js, requires-body=true, max-size=-1, timeout=20
+
 # 微博
 微博_移除首页推广 = type=http-response, pattern=(?i)^https:\/\/api\.weibo\.cn\/2\/(?:checkin\/show|client\/publisher_list|push\/active), script-path=https://kelee.one/Resource/JavaScript/Weibo/Weibo_remove_ads.js, requires-body=true, max-size=-1, timeout=20
 微博_移除首页顶部标签 = type=http-response, pattern=(?i)^https:\/\/api\.weibo\.cn\/2\/groups\/allgroups\/v2\?, script-path=https://kelee.one/Resource/JavaScript/Weibo/Weibo_remove_ads.js, requires-body=true, max-size=-1, timeout=20
@@ -494,4 +499,4 @@ Soul_移除Soul广告 = type=http-response, pattern=(?i)^https:\/\/(?:api-\w+|ch
 淘宝_移除淘宝开屏广告_2 = type=http-response, pattern=(?i)^https:\/\/poplayer\.template\.alibaba\.com\/\w+\.json, script-path=https://kelee.one/Resource/JavaScript/Taobao/Taobao_remove_ads.js, requires-body=true, max-size=-1, timeout=20
 
 [MITM]
-hostname = %APPEND% gql.reddit.com, gql-fed.reddit.com, games.mobileapi.hupu.com, fairy.mobileapi.hupu.com, bbs.mobileapi.hupu.com, goblin.hupu.com, 114.115.217.129, home.umetrip.com, m-cloud.zhihu.com, api.zhihu.com, www.zhihu.com, page-info.zhihu.com, zhida.zhihu.com, app.dewu.com, acs.m.goofish.com, g-acs.m.goofish.com, -i.vip.iqiyi.com, *.iqiyi.com, ci.xiaohongshu.com, edith.xiaohongshu.com, rec.xiaohongshu.com, so.xiaohongshu.com, www.xiaohongshu.com, api.coolapk.com, mp.weixin.qq.com, *.weibo.cn, *.weibo.com, weibo.com, appconf.mail.163.com, dashi.163.com, api.pinduoduo.com, m.pinduoduo.net, open-cms-api.quark.cn, stars.shuqireader.com, api.m.jd.com, m5.amap.com, ai.amap.com, m5-zb.amap.com, center.amap.com, sns.amap.com, info.amap.com, as.xiaojukeji.com, conf.diditaxi.com.cn, common.diditaxi.com.cn, res.xiaojukeji.com, api.udache.com, daijia.kuaidadi.com, htwkop-st.xiaojukeji.com, htwkop.xiaojukeji.com, freight.xiaojukeji.com, poi.map.xiaojukeji.com, pan.baidu.com, ad.12306.cn, mobile.12306.cn, api.gotokeep.com, api*.soulapp.cn, gateway-mobile-gray.soulapp.cn, post.soulapp.cn, ssp.soulapp.cn, acs.m.taobao.com, heic.alicdn.com, guide-acs.m.taobao.com, poplayer.template.alibaba.com, chat-live.soulapp.cn
+hostname = %APPEND% gql.reddit.com, gql-fed.reddit.com, games.mobileapi.hupu.com, fairy.mobileapi.hupu.com, bbs.mobileapi.hupu.com, goblin.hupu.com, 114.115.217.129, home.umetrip.com, m-cloud.zhihu.com, api.zhihu.com, www.zhihu.com, page-info.zhihu.com, zhida.zhihu.com, app.dewu.com, acs.m.goofish.com, g-acs.m.goofish.com, -i.vip.iqiyi.com, *.iqiyi.com, ci.xiaohongshu.com, edith.xiaohongshu.com, rec.xiaohongshu.com, so.xiaohongshu.com, www.xiaohongshu.com, api.coolapk.com, mp.weixin.qq.com, weixin110.qq.com, security.wechat.com, *.weibo.cn, *.weibo.com, weibo.com, appconf.mail.163.com, dashi.163.com, api.pinduoduo.com, m.pinduoduo.net, open-cms-api.quark.cn, stars.shuqireader.com, api.m.jd.com, m5.amap.com, ai.amap.com, m5-zb.amap.com, center.amap.com, sns.amap.com, info.amap.com, as.xiaojukeji.com, conf.diditaxi.com.cn, common.diditaxi.com.cn, res.xiaojukeji.com, api.udache.com, daijia.kuaidadi.com, htwkop-st.xiaojukeji.com, htwkop.xiaojukeji.com, freight.xiaojukeji.com, poi.map.xiaojukeji.com, pan.baidu.com, ad.12306.cn, mobile.12306.cn, api.gotokeep.com, api*.soulapp.cn, gateway-mobile-gray.soulapp.cn, post.soulapp.cn, ssp.soulapp.cn, acs.m.taobao.com, heic.alicdn.com, guide-acs.m.taobao.com, poplayer.template.alibaba.com, chat-live.soulapp.cn
