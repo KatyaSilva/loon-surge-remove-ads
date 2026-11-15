@@ -1,5 +1,5 @@
 #!name=HTTPDNS拦截器
-#!desc=此插件是所有去广告插件的依赖，拦截常见的HTTPDNS服务，以确保这些请求都能够在Loon的DNS框架下工作。
+#!desc=拦截常见的HTTPDNS服务，配合其他去广告模块，让域名解析由Surge处理。
 
 [Rule]
 DOMAIN-KEYWORD,httpdns,REJECT

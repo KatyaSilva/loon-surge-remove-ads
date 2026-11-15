@@ -1,4 +1,5 @@
 #!name=各软件去广告合集
+#!version=2026.11.15
 #!desc=Reddit、虎扑、航旅纵横、知乎、得物、闲鱼、爱奇艺、小红书、酷安、微信公众号、微博、网易邮箱大师、拼多多、夸克、京东、高德地图、滴滴、百度网盘、12306、Keep、QQ音乐、Soul、大麦、淘宝、飞猪旅行、红果短剧、同花顺 的去广告模块，另含微信外部链接解锁。
 
 [Rule]
@@ -147,6 +148,7 @@ DOMAIN,l2-toutiao-quic-ipv6-ml.gslb.ksyuncdn.com,REJECT,extended-matching,pre-ma
 DOMAIN-WILDCARD,webcast*-open*.douyin.com,REJECT,extended-matching,pre-matching
 DOMAIN-WILDCARD,webcast*-open*.cdnbuild.net,REJECT,extended-matching,pre-matching
 DOMAIN-WILDCARD,webcast*-open*.cdn.dsa.cdnbuild.net,REJECT,extended-matching,pre-matching
+DOMAIN,content-open.douyin.com,REJECT,extended-matching,pre-matching
 DOMAIN-WILDCARD,ecom*-normal*.ecombdapi.com,REJECT,extended-matching,pre-matching
 DOMAIN-WILDCARD,ec*-core*.ecombdapi.com,REJECT,extended-matching,pre-matching
 DOMAIN-WILDCARD,isaas*-normal*.ecombdapi.com,REJECT,extended-matching,pre-matching
@@ -523,7 +525,7 @@ http-response-jq (?i)^https:\/\/acs\.m\.taobao\.com\/gw\/mtop\.damai\.mec\.arist
 虎扑_移除虎扑广告_4 = type=http-response, pattern=(?i)^https:\/\/games\.mobileapi\.hupu\.com\/\d\/\d\.\d\.\d+\/bplapi\/user\/v1\/more, script-path=https://kelee.one/Resource/JavaScript/HUPU/HUPU_remove_ads.js, requires-body=true, max-size=-1, timeout=20
 
 # 航旅纵横
-航旅纵横_移除首页广告 = type=http-response, pattern=(?i)^https?:\/\/(114\.115\.217\.129|home\.umetrip\.com)\/gateway\/api\/umetrip\/native$, script-path=https://kelee.one/Resource/JavaScript/Umetrip/Umetrip_remove_ads.js, timeout=20
+航旅纵横_移除首页广告 = type=http-response, pattern=(?i)^https?:\/\/(114\.115\.217\.129|home\.umetrip\.com)\/gateway\/api\/umetrip\/native$, script-path=https://raw.githubusercontent.com/KatyaSilva/loon-surge-remove-ads/main/Scripts/app_compat.js, argument="umetrip", timeout=20
 
 # 小红书
 小红书_移除图片和实况照片水印 = type=http-response, pattern=(?i)^https:\/\/edith\.xiaohongshu\.com\/api\/sns\/v1\/note\/(?:imagefeed|live_photo\/save), script-path=https://kelee.one/Resource/JavaScript/RedPaper/RedPaper_remove_ads.js, requires-body=true, max-size=-1, timeout=20
@@ -573,7 +575,7 @@ http-response-jq (?i)^https:\/\/acs\.m\.taobao\.com\/gw\/mtop\.damai\.mec\.arist
 京东_移除京东广告 = type=http-response, pattern=(?i)^https:\/\/api\.m\.jd\.com\/client\.action\?functionId=(deliverLayer|getTabHomeInfo|myOrderInfo|orderTrackBusiness|personinfoBusiness|start|welcomeHome), script-path=https://kelee.one/Resource/JavaScript/JD/JD_remove_ads.js, requires-body=true, max-size=-1, timeout=20
 
 # 12306
-12306_移除12306应用内广告 = type=http-request, pattern=(?i)^https:\/\/mobile\.12306\.cn\/otsmobile\/app\/mgs\/mgw\.htm$, script-path=https://kelee.one/Resource/JavaScript/12306/12306_remove_ads.js, timeout=20
+12306_移除12306应用内广告 = type=http-request, pattern=(?i)^https:\/\/mobile\.12306\.cn\/otsmobile\/app\/mgs\/mgw\.htm$, script-path=https://raw.githubusercontent.com/KatyaSilva/loon-surge-remove-ads/main/Scripts/app_compat.js, argument="12306", timeout=20
 
 # Soul
 Soul_移除Soul广告 = type=http-response, pattern=(?i)^https:\/\/(?:api-\w+|chat-live|post)\.soulapp\.cn\/(?:chat\/limitInfo|chatroom\/chatClassifyRoomList|homepage\/diamond\/position\/info|v2\/post\/recSquare\/subTabs|v6\/planet\/config), script-path=https://kelee.one/Resource/JavaScript/Soul/Soul_remove_ads.js, requires-body=true, max-size=-1, timeout=20
@@ -583,7 +585,7 @@ Soul_移除Soul广告 = type=http-response, pattern=(?i)^https:\/\/(?:api-\w+|ch
 淘宝_移除淘宝开屏广告_2 = type=http-response, pattern=(?i)^https:\/\/poplayer\.template\.alibaba\.com\/\w+\.json, script-path=https://kelee.one/Resource/JavaScript/Taobao/Taobao_remove_ads.js, requires-body=true, max-size=-1, timeout=20
 
 # 同花顺
-同花顺_移除推荐广告 = type=http-response, pattern=^https:\/\/recommend\.10jqka\.com\.cn\/app\/discover\/api\/v1\/recommend, requires-body=true, max-size=3145728, script-path=https://raw.githubusercontent.com/androidcn/userscripts/main/tonghuashun.js, timeout=60, script-update-interval=0
+同花顺_移除推荐广告 = type=http-response, pattern=^https:\/\/recommend\.10jqka\.com\.cn\/app\/discover\/api\/v1\/recommend, requires-body=true, max-size=3145728, script-path=https://raw.githubusercontent.com/KatyaSilva/loon-surge-remove-ads/main/Scripts/app_compat.js, argument="tonghuashun", timeout=60
 
 [Host]
 # 红果短剧
