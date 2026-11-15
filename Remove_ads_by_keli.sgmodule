@@ -1,5 +1,6 @@
 #!name=可莉广告过滤器
 #!desc=可莉自用的广告过滤器
+#!version=2026.11.15
 
 [Rule]
 DOMAIN,acdn.adnxs.com,REJECT
@@ -32,8 +33,8 @@ DOMAIN,mallapi2.qinlinkeji.com,REJECT // 商城页面
 DOMAIN,open-pixon.ads-pixiv.net,REJECT
 
 [Map Local]
-^http:\/\/p\.kuaidi100\.com\/mobile\/mobileapi\.dodata-type=text data="{}" status-code=200 header="Content-Type:application/json"
-^http:\/\/p\.kuaidi100\.com\/advertisement\/data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^http:\/\/p\.kuaidi100\.com\/mobile\/mobileapi\.do data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^http:\/\/p\.kuaidi100\.com\/advertisement\/ data-type=text data="{}" status-code=200 header="Content-Type:application/json"
 
 (?i)^https?:\/\/api-access\.pangolin-sdk-toutiao\.com\/api\/ad\/union\/sdk data-type=text data="" status-code=404
 
