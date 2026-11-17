@@ -36,7 +36,6 @@
       && item.info && typeof item.info === 'object' && item.info.subject === 'ad'));
     if (filtered.length === body.data.length) return $done({});
     body.data = filtered;
-    body.total = filtered.length;
     return $done({ body: JSON.stringify(body) });
   }
 

@@ -46,7 +46,18 @@ test('Umetrip tolerates absent headers and preserves other operations', () => {
 test('Tonghuashun removes ads and preserves unrecognized non-ad entries', () => {
   const data = [{ id: 1, info: { subject: 'news' } }, { id: 2, info: { subject: 'ad' } }, { id: 3 }, null, 7];
   const result = run('tonghuashun', { body: JSON.stringify({ data, total: 5, code: 0 }) });
-  assert.deepEqual(JSON.parse(result.body), { data: [data[0], data[2], null, 7], total: 4, code: 0 });
+  assert.deepEqual(JSON.parse(result.body), { data: [data[0], data[2], null, 7], total: 5, code: 0 });
+});
+
+test('Tonghuashun preserves server pagination metadata when ads are removed', () => {
+  const body = { data: [{ id: 1, info: { subject: 'news' } }, { id: 2, info: { subject: 'ad' } }],
+    total: 200, page: 3, has_more: true, next_cursor: 'next-page' };
+  const result = JSON.parse(run('tonghuashun', { body: JSON.stringify(body) }).body);
+  assert.deepEqual(result, { ...body, data: [body.data[0]] });
+  const withoutTotal = JSON.parse(run('tonghuashun', {
+    body: JSON.stringify({ data: body.data }),
+  }).body);
+  assert.equal(Object.hasOwn(withoutTotal, 'total'), false);
 });
 
 test('Tonghuashun leaves no-ad pagination totals and malformed responses untouched', () => {

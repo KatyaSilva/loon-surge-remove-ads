@@ -1,6 +1,6 @@
 #!name=各软件去广告合集
-#!version=2026.11.17
-#!desc=Reddit、虎扑、航旅纵横、知乎、得物、闲鱼、爱奇艺、小红书、酷安、微信公众号、微博、网易邮箱大师、拼多多、夸克、京东、高德地图、滴滴、百度网盘、12306、Keep、QQ音乐、Soul、大麦、淘宝、飞猪旅行、同花顺 的去广告模块，另含微信外部链接解锁。
+#!version=2026.11.17.1
+#!desc=Reddit、虎扑、航旅纵横、知乎、得物、闲鱼、爱奇艺、小红书、酷安、微信公众号、微博、网易邮箱大师、拼多多、夸克、京东、高德地图、滴滴、百度网盘、12306、Keep、QQ音乐、Soul、大麦、淘宝、飞猪旅行、同花顺 的去广告及界面精简模块，另含微信外部链接解锁。
 
 [Rule]
 # 航旅纵横
@@ -292,8 +292,8 @@ http-response-jq (?i)^https:\/\/api\.zhihu\.com\/root\/tab\/v\d(?:\?.+)?$ '.tab_
 http-response-jq (?i)^https:\/\/api\.zhihu\.com\/topstory\/recommend\? '.data |= map(select(.type == "ComponentCard"))'
 http-response-jq (?i)^https:\/\/api\.zhihu\.com\/questions\/\d+\/feeds\? 'reduce (["ad_info"] | map(split("."))[]) as $p (.; . as $d | try delpaths([$p]) catch $d)'
 http-response-jq (?i)^https:\/\/api\.zhihu\.com\/comment_v\d\/(answers|pins)\/\d+\/root_comment\? 'reduce (["atmosphere_voting_config"] | map(split("."))[]) as $p (.; . as $d | try delpaths([$p]) catch $d)'
-http-response-jq (?i)^https:\/\/(api|page-info)(?:\.zhihu)?\.com\/answers\/v\d\/\d+(?:\?.*)?$ 'reduce (["third_business", "float_search_word"] | map(split("."))[]) as $p (.; . as $d | try delpaths([$p]) catch $d)'
-http-response-jq (?i)^https:\/\/(api|page-info)(?:\.zhihu)?\.com\/answers\/v\d\/\d+(?:\?.*)?$ '.structured_content.segments |= map(select(.type != "card"))'
+http-response-jq (?i)^https:\/\/(api|page-info)\.zhihu\.com\/answers\/v\d\/\d+(?:\?.*)?$ 'reduce (["third_business", "float_search_word"] | map(split("."))[]) as $p (.; . as $d | try delpaths([$p]) catch $d)'
+http-response-jq (?i)^https:\/\/(api|page-info)\.zhihu\.com\/answers\/v\d\/\d+(?:\?.*)?$ '.structured_content.segments |= map(select(.type != "card"))'
 http-response-jq (?i)^https:\/\/api\.zhihu\.com\/topstory\/recommend\? '.data[]?.children |= (if type == "array" then map(select(.id != "ring")) else . end)'
 http-response-jq (?i)^https:\/\/api\.zhihu\.com\/(articles|answers|pins)\/v\d\/\d+\? 'reduce (["third_business", "ring_info", "interaction_bar_plugins"] | map(split("."))[]) as $p (.; . as $d | try delpaths([$p]) catch $d)'
 http-response-jq (?i)^https:\/\/api\.zhihu\.com\/comment_v\d\/answers\/\d+\/list-headers$ 'reduce (["continuous_consumption_module"] | map(split("."))[]) as $p (.; . as $d | try delpaths([$p]) catch $d)'
@@ -357,8 +357,8 @@ http-response-jq (?i)^https:\/\/api\.coolapk\.com\/v6\/feed\/detail\? '.data.hot
 http-response-jq (?i)^https:\/\/api\.coolapk\.com\/v6\/feed\/replyList 'if .data? and ((.data | type) == "array") and (.data | length > 0) then .data |= map(select(.id?)) else . end'
 http-response-jq (?i)^https:\/\/api\.coolapk\.com\/v6\/main\/dataList '.data |= (if (type=="array" and length>0) then map(select((.entityTemplate!="sponsorCard") and (.title!="精选配件"))) else . end)'
 http-response-jq (?i)^https:\/\/api\.coolapk\.com\/v6\/page\/dataList 'if (.data | length > 0) then .data |= map(select((.title? != "酷安热搜") and (.entityTemplate? != "imageScaleCard") and (.entityTemplate? != "sponsorCard"))) else . end'
-http-response-jq (?i)^https:\/\/api\.coolapk\.com\/v6\/main\/indexV8 '.data |= (if length > 0 then map(select((.entityTemplate != "sponsorCard") and ([8639,29349,33006,32557] | index(.entityId) | not) and ((.title // "" | test("值得买|红包")) | not))) else . end)'
-http-response-jq (?i)^https:\/\/api\.coolapk\.com\/v6\/main\/init '.data |= map(select(.entityId? | [944,945,6390] | index(.) | not) | if .entityId == 20131 then .entities |= map(select(.title != "酷品")) else . end)'
+http-response-jq (?i)^https:\/\/api\.coolapk\.com\/v6\/main\/indexV8 'if (.data | type) == "array" then .data |= map(select(if type == "object" then (.entityTemplate != "sponsorCard") and (.entityId as $id | [8639,29349,33006,32557] | index($id) | not) and ((.title // "" | tostring | test("值得买|红包")) | not) else true end)) else . end'
+http-response-jq (?i)^https:\/\/api\.coolapk\.com\/v6\/main\/init 'if (.data | type) == "array" then .data |= map(select(if type == "object" then (.entityId as $id | [944,945,6390] | index($id) | not) else true end) | if type == "object" and .entityId == 20131 and (.entities | type) == "array" then .entities |= map(select(if type == "object" then .title != "酷品" else true end)) else . end) else . end'
 
 # 网易邮箱大师
 http-response-jq (?i)^https:\/\/appconf\.mail\.163\.com\/mailmaster\/api\/page\/v2\/conf\.do$ 'reduce (["data.functionOperatorInfoList", "data.memberOperator", "data.activityTabInfoList"] | map(split("."))[]) as $p (.; . as $d | try delpaths([$p]) catch $d)'
